@@ -33,29 +33,24 @@ Add this service block:
       - /dev/dri
     environment:
       - HSA_OVERRIDE_GFX_VERSION=11.0.0  # Adjust for your AMD GPU if needed
-      - LLAMA_CPP_PORT=${LLAMA_CPP_PORT:-10000}
-      - LLAMA_CPP_MODEL_PATH=${LLAMA_CPP_MODEL_PATH:-}
-      - LLAMA_CPP_GPU_LAYERS=${LLAMA_CPP_GPU_LAYERS:-999}
-      - LLAMA_CPP_CTX_SIZE=${LLAMA_CPP_CTX_SIZE:-4096}
-    command: >
-      bash -c '
-        if [ -n "$$LLAMA_CPP_MODEL_PATH" ] && [ -f "/models/$$LLAMA_CPP_MODEL_PATH" ]; then
-          ./build/bin/llama-server \
-            --model "/models/$$LLAMA_CPP_MODEL_PATH" \
-            --port $$LLAMA_CPP_PORT \
-            --n-gpu-layers $$LLAMA_CPP_GPU_LAYERS \
-            --ctx-size $$LLAMA_CPP_CTX_SIZE \
-            --host 0.0.0.0 \
-            --log-disable
-        else
-          echo "No model specified or file not found. Server will start without a model."
-          ./build/bin/llama-server \
-            --port $$LLAMA_CPP_PORT \
-            --host 0.0.0.0 \
-            --log-disable
-        fi
-      '
+    # No command override by default — lets the entrypoint start the server
+    # with no model loaded. Add a command override (below) when you want
+    # to load a specific model.
 ```
+
+> **Note:** The image's entrypoint runs `llama-server` directly. To load a model, override with:
+> ```yaml
+>    command: >
+>      --model /models/YOUR_MODEL.gguf
+>      --port ${LLAMA_CPP_PORT:-10000}
+>      --n-gpu-layers ${LLAMA_CPP_GPU_LAYERS:-999}
+>      --ctx-size ${LLAMA_CPP_CTX_SIZE:-4096}
+>      --host 0.0.0.0
+> ```
+> Arguments after `command:` are passed directly to the entrypoint's `llama-server` binary. Verify with:
+> ```bash
+> podman run --rm ghcr.io/ggml-org/llama.cpp:server-rocm --help
+> ```
 
 #### 3. Update `.env`
 Add these variables:
@@ -138,11 +133,17 @@ huggingface-cli download TheBloke/Llama-2-7B-GGUF llama-2-7b.Q4_K_M.gguf --local
 cd /home/jeppson/projects/local-llm/models
 wget https://huggingface.co/TheBloke/Llama-2-7B-GGUF/resolve/main/llama-2-7b.Q4_K_M.gguf
 
-# 4. Update .env with the model filename
-echo 'LLAMA_CPP_MODEL_PATH=llama-2-7b.Q4_K_M.gguf' >> /home/jeppson/projects/local-llm/.env
+# 4. Update `podman-compose.yml` to add the model via `command:` override
+#    Uncomment or add the `command:` block in the `llama-server` service:
+#    command: >
+#      --model /models/llama-2-7b.Q4_K_M.gguf
+#      --port 10000
+#      --n-gpu-layers 999
+#      --ctx-size 4096
+#      --host 0.0.0.0
 
 # 5. Restart llama.cpp container with the model
-podman compose restart llama-server
+podman compose up -d llama-server
 
 # 6. Check logs for successful model loading on GPU
 podman logs llama-server | grep -i "loading model\|gpu\|rocm"
@@ -236,13 +237,29 @@ After GPU testing, you can:
 ┌─────────────┐     ┌─────────────┐     ┌──────────────┐
 │   Ollama    │◄────│ Open WebUI  │◄────│ llama.cpp    │
 │  (:11434)   │     │  (:3000)    │     │ (:10000) ROCm│
+│  (host)     │     │  (host net) │     │  (host net)  │
 └─────────────┘     └──────┬──────┘     └──────────────┘
                            │
                     ┌──────▼──────┐
                     │   SearXNG   │
                     │   (:8411)   │
+                    │ (compose net│
                     └─────────────┘
 ```
+
+---
+
+## Ollama CPU-Only Mode
+
+To give llama.cpp full GPU access while keeping Ollama running:
+
+```bash
+# Set Ollama to CPU-only, then restart
+export OLLAMA_NUM_GPU=0
+systemctl --user restart ollama
+```
+
+With `OLLAMA_NUM_GPU=0`, Ollama stays responsive on `:11434` but does all inference on CPU. This lets Open WebUI switch between Ollama (CPU) and llama.cpp (GPU) without stopping either service. CPU inference will be slower but functional.
 
 ---
 
@@ -250,5 +267,6 @@ After GPU testing, you can:
 
 - **ROCm vs CUDA:** ROCm is for AMD GPUs. If you have NVIDIA, use `server-cuda` image instead
 - **Model switching:** llama.cpp loads one model at a time. Change `LLAMA_CPP_MODEL_PATH` in `.env` and restart container
-- **GPU contention:** Never run Ollama and llama.cpp with models loaded simultaneously on the same GPU
+- **GPU contention:** Never run Ollama and llama.cpp with GPU models loaded simultaneously on the same GPU. Use `OLLAMA_NUM_GPU=0` to run Ollama on CPU while llama.cpp uses the GPU
+- **Binary path:** The container image installs `llama-server` in PATH — do **not** use `./build/bin/llama-server` (that's a dev build path)
 - **Backup:** This file is your restore point. Keep it in the repo!
