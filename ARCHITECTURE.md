@@ -19,7 +19,7 @@ Open WebUI provides a ChatGPT-like web interface that connects to:
 - Environment variables `OLLAMA_BASE_URL` and `SEARXNG_API_URL` point to the respective backends
 - Data persists in a Podman volume mounted at `/app/backend/data`
 
-**Why host networking?** Open WebUI needs to reach both Ollama (running on the host, not in a container) and SearXNG (in the Podman pod). Host networking simplifies connectivity without complex port mapping.
+**Why host networking?** Open WebUI needs to reach both Ollama (running on the host, not in a container) and SearXNG (published on the host via the compose network port mapping). Host networking simplifies connectivity without complex port mapping.
 
 ### 2. SearXNG
 
@@ -50,7 +50,7 @@ Valkey (a Redis fork) provides caching and session storage for SearXNG. It handl
 **Key configuration:**
 - Runs as `valkey-server` with minimal persistence (`--save 30 1`)
 - Data persisted in the `valkey-data` Podman volume
-- Only accessible within the Podman pod (no external port exposure)
+- Only accessible within the compose network (no external port exposure)
 
 ### 4. Ollama (Host)
 
@@ -66,37 +66,44 @@ Ollama runs directly on the host (not in a container) and provides:
 ## Networking
 
 ```
-┌─────────────────────────────────────────────────────┐
-│                    Host Machine                      │
-│                                                      │
-│  ┌──────────────┐    ┌──────────────────────────┐   │
-│  │   Ollama     │◄───│  Podman Pod: local-llm   │   │
-│  │  :11434      │    │                          │   │
-│  └──────────────┘    │  ┌──────────┐  ┌───────┐ │   │
-│                      │  │ SearXNG  │  │Valkey │ │   │
-│                      │  │ :8411    │  │ :6379 │ │   │
-│                      │  └──────────┘  └───────┘ │   │
-│                      └──────────────────────────┘   │
-│                      ▲                              │
-│  ┌───────────────────┴──────────────────────────┐   │
-│  │  Open WebUI (host network)                   │   │
-│  │  :3000                                       │   │
-│  │  ┌─────────────┐  ┌──────────────────────┐   │   │
-│  │  │ Talks to    │  │ Talks to             │   │   │
-│  │  │ Ollama      │  │ SearXNG              │   │   │
-│  │  │ :11434      │  │ :8411                │   │   │
-│  │  └─────────────┘  └──────────────────────┘   │   │
-│  └──────────────────────────────────────────────┘   │
-└─────────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────────────────────────┐
+│                       Host Machine                                   │
+│                                                                      │
+│  ┌───────────────┐                                                  │
+│  │    Ollama     │                                                  │
+│  │   :11434      │                                                  │
+│  └───────────────┘                                                  │
+│         ▲                                                           │
+│         │                                                           │
+│  ┌─────────────────────────────────────────────────────────────┐    │
+│  │  Open WebUI (network_mode: host)                             │    │
+│  │  :3000                                                       │    │
+│  │  ┌───────────────┐  ┌───────────────────┐                    │    │
+│  │  │ Talks to      │  │ Talks to          │                    │    │
+│  │  │ Ollama        │  │ SearXNG           │                    │    │
+│  │  │ :11434        │  │ :8411             │                    │    │
+│  │  └───────────────┘  └───────────────────┘                    │    │
+│  └─────────────────────────────────────────────────────────────┘    │
+│         ▲                                                           │
+│         │                                                           │
+│  ┌─────────────────────────────────────────────────────────────┐    │
+│  │  Podman Compose Network: local-llm                           │    │
+│  │                                                              │    │
+│  │  ┌──────────────┐  ┌──────────────┐                          │    │
+│  │  │   SearXNG    │  │    Valkey    │                          │    │
+│  │  │ :8411        │  │    :6379     │                          │    │
+│  │  └──────────────┘  └──────────────┘                          │    │
+│  └─────────────────────────────────────────────────────────────┘    │
+└──────────────────────────────────────────────────────────────────────┘
 ```
 
 ### Network Design Decisions
 
-1. **Podman Pod (`local-llm`):** SearXNG and Valkey share a pod, giving them shared networking (localhost connectivity) without exposing ports externally.
+1. **Compose Network (`local-llm`):** SearXNG and Valkey share the default compose network, giving them DNS-based connectivity (by service name) without exposing ports to the host beyond what's published.
 
-2. **Host Network (Open WebUI):** Open WebUI uses `network_mode: host` to reach both the host's Ollama and the pod's SearXNG without complex routing.
+2. **Host Network (Open WebUI):** Open WebUI uses `network_mode: host` to reach both the host's Ollama and the published SearXNG port without complex routing.
 
-3. **No External Exposure:** Valkey has no published ports — it's only accessible within the pod. SearXNG's port is published for direct access but primarily consumed by Open WebUI.
+3. **Minimal Exposure:** Only SearXNG's port is published (`8411`, configurable via `.env`). Valkey has no published ports — it's only accessible from SearXNG via the compose network. Open WebUI listens on the host directly (port `3000`).
 
 ## Data Persistence
 
