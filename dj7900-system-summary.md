@@ -34,8 +34,8 @@ sudo dmidecode -t system
        Kernel modules: amdgpu
 ```
 - Detailed outputs:
-    - [rocm-smi.md](./rocm-smi.md)
-    - [rocminfo.md](./rocminfo.md)
+    - [rocm-smi.md](../notes/guides/dj7900/rocm-smi.md)
+    - [rocminfo.md](../notes/guides/dj7900/rocminfo.md)
 
 ### Do not attempt to disable power management
 ```bash

@@ -2,7 +2,14 @@
 
 ## Overview
 
-Add a llama.cpp server container with ROCm (AMD GPU) support to the existing `podman-compose.yml`. Keep Ollama as the primary model manager, and add llama.cpp as an alternative OpenAI-compatible connection in Open WebUI. Models will be stored in `models/`.
+Add a llama.cpp server container with ROCm (AMD GPU) support to the existing `podman-compose.yml`. Keep Ollama as the primary model manager, and add llama.cpp as an alternative OpenAI-compatible connection in Open WebUI. Models will be managed via the standard Hugging Face cache at `~/.cache/huggingface/`.
+
+### Why Hugging Face Cache?
+- **Standard location** used by `huggingface-cli`, `transformers`, and other HF tools
+- **Easy model management** with `huggingface-cli download` / `scan-cache` / `delete-cache`
+- **Shared cache** between host tools and container
+- **Follows community best practices** for troubleshooting and tool integration
+- **llama.cpp `-hf` flag** loads models directly from HF cache by model ID
 
 ### Critical Constraint
 **Ollama is actively using the dedicated GPU.** Loading another model on the same GPU risks OOM/crash. GPU testing requires stopping Ollama first.
@@ -13,9 +20,9 @@ Add a llama.cpp server container with ROCm (AMD GPU) support to the existing `po
 
 ### Phase 1: Infrastructure Setup
 
-#### 1. Create models directory
+#### 1. Ensure Hugging Face cache directory exists
 ```bash
-mkdir -p /home/jeppson/projects/local-llm/models
+mkdir -p ~/.cache/huggingface/hub
 ```
 
 #### 2. Add llama.cpp service to `podman-compose.yml`
@@ -27,12 +34,13 @@ Add this service block:
     restart: unless-stopped
     network_mode: host
     volumes:
-      - ./models:/models:Z
+      - ${HF_HOME:-$HOME/.cache/huggingface}:/hf:Z  # Mount HF cache
     devices:
       - /dev/kfd
       - /dev/dri
     environment:
       - HSA_OVERRIDE_GFX_VERSION=11.0.0  # Adjust for your AMD GPU if needed
+      - HF_HUB_CACHE=/hf/hub  # Tell HF tools where cache is inside container
     # No command override by default — lets the entrypoint start the server
     # with no model loaded. Add a command override (below) when you want
     # to load a specific model.
@@ -41,7 +49,16 @@ Add this service block:
 > **Note:** The image's entrypoint runs `llama-server` directly. To load a model, override with:
 > ```yaml
 >    command: >
->      --model /models/YOUR_MODEL.gguf
+>      --model /hf/hub/models--OWNER--MODEL/snapshots/COMMIT_HASH/model.gguf
+>      --port ${LLAMA_CPP_PORT:-10000}
+>      --n-gpu-layers ${LLAMA_CPP_GPU_LAYERS:-999}
+>      --ctx-size ${LLAMA_CPP_CTX_SIZE:-4096}
+>      --host 0.0.0.0
+> ```
+> Or use the `-hf` flag to load by model ID directly from cache:
+> ```yaml
+>    command: >
+>      -hf owner/model-name:filename.gguf
 >      --port ${LLAMA_CPP_PORT:-10000}
 >      --n-gpu-layers ${LLAMA_CPP_GPU_LAYERS:-999}
 >      --ctx-size ${LLAMA_CPP_CTX_SIZE:-4096}
@@ -57,7 +74,7 @@ Add these variables:
 ```bash
 # llama.cpp server configuration
 LLAMA_CPP_PORT=10000
-LLAMA_CPP_MODEL_PATH=  # e.g., "llama-3.2-3b-instruct.Q4_K_M.gguf"
+LLAMA_CPP_MODEL_PATH=  # e.g., "owner/model-name:filename.gguf" for -hf flag
 LLAMA_CPP_GPU_LAYERS=999
 LLAMA_CPP_CTX_SIZE=4096
 ```
@@ -113,7 +130,7 @@ If all 5 steps pass, the infrastructure is solid. You can now proceed to GPU tes
 
 #### Pre-Test Checklist
 - [ ] Safe verification steps 1-5 completed successfully
-- [ ] You have a small test model downloaded (e.g., `llama-3.2-3b-instruct.Q4_K_M.gguf` ~2GB)
+- [ ] You have a small test model in HF cache (e.g., `llama-3.2-3b-instruct.Q4_K_M.gguf` ~2GB)
 - [ ] You know how to restart Ollama after testing
 
 #### Step-by-Step GPU Test
@@ -125,18 +142,14 @@ systemctl --user stop ollama
 # 2. Verify Ollama is stopped
 systemctl --user status ollama
 
-# 3. Download a small test model (if you don't have one)
-#    Option A: Using huggingface-cli (if installed)
-huggingface-cli download TheBloke/Llama-2-7B-GGUF llama-2-7b.Q4_K_M.gguf --local-dir /home/jeppson/projects/local-llm/models/
-
-#    Option B: Using wget (direct link)
-cd /home/jeppson/projects/local-llm/models
-wget https://huggingface.co/TheBloke/Llama-2-7B-GGUF/resolve/main/llama-2-7b.Q4_K_M.gguf
+# 3. Download a small test model to HF cache (if you don't have one)
+#    This downloads to ~/.cache/huggingface/hub/ automatically
+huggingface-cli download TheBloke/Llama-2-7B-GGUF llama-2-7b.Q4_K_M.gguf
 
 # 4. Update `podman-compose.yml` to add the model via `command:` override
 #    Uncomment or add the `command:` block in the `llama-server` service:
 #    command: >
-#      --model /models/llama-2-7b.Q4_K_M.gguf
+#      -hf TheBloke/Llama-2-7B-GGUF:llama-2-7b.Q4_K_M.gguf
 #      --port 10000
 #      --n-gpu-layers 999
 #      --ctx-size 4096
@@ -199,10 +212,16 @@ LLAMA_CPP_CTX_SIZE=2048  # instead of 4096
 
 **Model not found:**
 ```bash
-# Verify file exists in container
-podman exec llama-server ls -lh /models/
+# Verify HF cache is mounted correctly in container
+podman exec llama-server ls -lh /hf/hub/
 
-# Check .env variable matches exact filename
+# Check what's in your HF cache on the host
+huggingface-cli scan-cache
+
+# Verify model ID and filename are correct
+huggingface-cli download TheBloke/Llama-2-7B-GGUF llama-2-7b.Q4_K_M.gguf --local-dir-use-symlinks=False
+
+# Check .env variable matches exact model ID:filename format
 cat /home/jeppson/projects/local-llm/.env | grep LLAMA_CPP_MODEL_PATH
 ```
 
@@ -263,10 +282,37 @@ With `OLLAMA_NUM_GPU=0`, Ollama stays responsive on `:11434` but does all infere
 
 ---
 
+## Model Management with Hugging Face CLI
+
+The standard HF cache makes model management straightforward:
+
+```bash
+# Install huggingface-cli (if not already installed)
+pip install -U huggingface_hub
+
+# Download a model to the HF cache
+huggingface-cli download TheBloke/Llama-2-7B-GGUF llama-2-7b.Q4_K_M.gguf
+
+# See what's in your cache (with sizes)
+huggingface-cli scan-cache
+
+# Delete a specific revision/model from cache
+huggingface-cli delete-cache
+
+# Set HF_HOME if you want a custom location (default: ~/.cache/huggingface)
+export HF_HOME=/path/to/custom/cache
+```
+
+Models in the cache can be referenced in llama.cpp using the `-hf` flag with format:
+`owner/repo:filename.gguf`
+
+---
+
 ## Notes
 
 - **ROCm vs CUDA:** ROCm is for AMD GPUs. If you have NVIDIA, use `server-cuda` image instead
 - **Model switching:** llama.cpp loads one model at a time. Change `LLAMA_CPP_MODEL_PATH` in `.env` and restart container
 - **GPU contention:** Never run Ollama and llama.cpp with GPU models loaded simultaneously on the same GPU. Use `OLLAMA_NUM_GPU=0` to run Ollama on CPU while llama.cpp uses the GPU
 - **Binary path:** The container image installs `llama-server` in PATH — do **not** use `./build/bin/llama-server` (that's a dev build path)
+- **HF Cache:** Models are stored in `~/.cache/huggingface/hub/` and mounted into the container at `/hf`. This enables seamless integration with `huggingface-cli` and other HF tools
 - **Backup:** This file is your restore point. Keep it in the repo!
