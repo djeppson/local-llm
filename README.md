@@ -2,37 +2,6 @@
 
 A self-hosted local LLM stack powered by **Podman**, combining [Open WebUI](https://docs.openwebui.com/) with [SearXNG](https://docs.searxng.org/) as a privacy-respecting search backend, all orchestrated via `podman-compose`.
 
-## Architecture
-
-```
-┌─────────────────────────────────────────────────┐
-│                  Your Browser                    │
-└────────────────────┬────────────────────────────┘
-                     │ :3000
-                     ▼
-┌─────────────────────────────────────────────────────────┐
-│                  Open WebUI (:3000)                      │
-│  - Chat UI for local LLMs                               │
-│  - Connected to Ollama + llama.cpp for inference        │
-│  - Connected to SearXNG for web search                  │
-└────────────────────┬────────────────────────────────────┘
-                     │
-        ┌────────────┼────────────┐
-        ▼            ▼            ▼
-┌──────────────┐ ┌──────────────┐ ┌───────────────┐
-│   Ollama     │ │ llama.cpp    │ │   SearXNG     │
-│  (:11434)    │ │  (:10000)    │ │  (:8411)      │
-│  CPU-based   │ │  GPU-based   │ │  Search       │
-│  Inference   │ │  Inference   │ │  Engine       │
-└──────────────┘ └──────────────┘ └───────┬───────┘
-                                          │
-                                 ┌────────▼────────┐
-                                 │   Valkey        │
-                                 │  (Redis compat) │
-                                 │  Cache/Backend  │
-                                 └─────────────────┘
-```
-
 ## Quick Start
 
 ### Start the Stack
@@ -77,7 +46,7 @@ systemctl --user restart local-llm
 | Service      | URL                              | Description              |
 |--------------|----------------------------------|--------------------------|
 | Open WebUI   | http://localhost:3000            | Main chat interface      |
-| llama.cpp    | http://localhost:10000/v1        | OpenAI-compatible API    |
+| Ollama       | http://localhost:11434           | LLM inference API        |
 | SearXNG      | http://localhost:8411            | Search engine interface  |
 
 ## Configuration
@@ -117,7 +86,7 @@ local-llm/
 ├── ARCHITECTURE.md         # Detailed architecture documentation
 └── TROUBLESHOOTING.md      # Common issues and fixes
 
-Models are stored in: ~/.cache/huggingface/hub/
+Ollama models are stored in: ~/.ollama/models/
 ```
 
 ## Containers
@@ -128,129 +97,50 @@ Models are stored in: ~/.cache/huggingface/hub/
 | `searxng-valkey`| `docker.io/valkey/valkey:9-alpine`         | Redis-compatible cache      |
 | `open-webui`    | `ghcr.io/open-webui/open-webui`            | Web UI for local LLMs        |
 
-## Managing llama.cpp Models
+## Managing Ollama Models
 
-### Switch to Qwen3.5 27B Model
+Ollama runs as a **systemd user service** with GPU acceleration via ROCm. Models are stored in `~/.ollama/models/`.
 
-llama.cpp runs as a **systemd user service** and loads the model path specified directly in the service file (not via environment variables). Models are cached in the standard Hugging Face cache directory: `~/.cache/huggingface/hub/`.
+### Pull and Use a Model
 
-#### Steps to Download and Activate Qwen3.5 27B:
-
-1. **Download the Model**
-
-   Download a GGUF-quantized version of Qwen3.5 27B from Hugging Face:
-
-   ```bash
-   # Install Hugging Face CLI if not already installed
-   pip install huggingface-hub
-
-   # Download model (uses standard HF cache at ~/.cache/huggingface/hub/)
-   huggingface-cli download lmstudio-community/Qwen3.6-27B-GGUF --include "*Q4_K_M*"
-   ```
-
-   > **Note:** The Q4_K_M quantization is recommended for 27B models. Adjust based on your VRAM. The download is cached in `~/.cache/huggingface/hub/`.
-
-2. **Find the Downloaded Model Path**
-
-   After downloading, note the full path to the GGUF file:
-
-   ```bash
-   # Find your downloaded model
-   find ~/.cache/huggingface/hub -name "*Qwen3.6*27B*.gguf" -type l
-   ```
-
-   Example output might be:
-   ```
-   ~/.cache/huggingface/hub/models--lmstudio-community--Qwen3.6-27B-GGUF/snapshots/[hash]/Qwen3.6-27B-Q4_K_M.gguf
-   ```
-
-3. **Update the Systemd Service File**
-
-   Edit the llama-server systemd service to point to the new model:
-
-   ```bash
-   # Edit the service file
-   systemctl --user edit llama-server
-   ```
-
-   Replace the `--model` path in the `ExecStart` line with your downloaded model path:
-
-   ```ini
-   [Service]
-   ExecStart=%h/.local/bin/llama-server \
-     --model %h/.cache/huggingface/hub/models--lmstudio-community--Qwen3.6-27B-GGUF/snapshots/[hash]/Qwen3.6-27B-Q4_K_M.gguf \
-     --port 10000 \
-     --n-gpu-layers 999 \
-     --ctx-size 4096 \
-     --host 0.0.0.0
-   ```
-
-   > **Tip:** Use `%h` for home directory expansion in systemd unit files.
-
-4. **Restart the llama.cpp Service**
-
-   ```bash
-   # Reload systemd to pick up changes
-   systemctl --user daemon-reload
-
-   # Restart the service
-   systemctl --user restart llama-server
-   ```
-
-5. **Verify the Model is Loaded**
-
-   ```bash
-   # Check service status
-   systemctl --user status llama-server
-
-   # View service logs
-   journalctl --user -u llama-server -n 50
-
-   # Follow logs in real-time (Ctrl+C to exit)
-   journalctl --user -u llama-server -f
-
-   # Test the API
-   curl http://localhost:10000/v1/models
-   ```
-
-6. **Verify in Open WebUI**
-
-   The llama.cpp connection should already be configured in Open WebUI (via `podman-compose.yml`). If not:
-   - Go to Admin Settings → Connections → OpenAI
-   - Add URL: `http://localhost:10000/v1`
-   - Leave API Key empty
-   - Test the connection
-   - The Qwen model should appear in the model dropdown
-
-### Cache Directory
-
-Models are automatically cached in the standard Hugging Face directory:
-```
-~/.cache/huggingface/hub/
-```
-
-To see all cached models:
 ```bash
-ls -lh ~/.cache/huggingface/hub/models--*/
+# Pull a model (automatically stored in ~/.ollama/models/)
+ollama pull qwen3:27b
+
+# List available models
+ollama list
+
+# Run a model
+ollama run qwen3:27b
 ```
 
-### Other Model Operations
+### Verify Ollama Service
 
-**Check Current Model Configuration**
 ```bash
-systemctl --user cat llama-server | grep -A 10 "ExecStart"
+# Check service status
+systemctl --user status ollama
+
+# View service logs
+journalctl --user -u ollama -n 50
+
+# Follow logs in real-time (Ctrl+C to exit)
+journalctl --user -u ollama -f
+
+# Test the API
+curl http://localhost:11434/api/tags
 ```
 
-**List Available Models via API**
+### GPU Acceleration
+
+Ollama is configured with GPU acceleration via ROCm (`HIP_VISIBLE_DEVICES=0`). Verify GPU usage in the logs:
+
 ```bash
-curl http://localhost:10000/v1/models
+journalctl --user -u ollama -f | grep -i "gpu\|rocm\|hip"
 ```
 
-**Check GPU Usage**
-```bash
-# View ROCm device in logs
-journalctl --user -u llama-server -f | grep -i "device\|gpu\|rocm"
-```
+### Verify in Open WebUI
+
+Ollama is connected to Open WebUI by default. The available models should appear in Open WebUI's model dropdown automatically.
 
 ## Updating
 
@@ -273,6 +163,4 @@ podman compose up -d
 - [Open WebUI Documentation](https://docs.openwebui.com/)
 - [Podman Compose Documentation](https://podman-desktop.io/docs/podman-compose)
 - [Ollama Documentation](https://ollama.com/)
-- [llama.cpp GitHub](https://github.com/ggml-org/llama.cpp)
 - [Qwen Model Hub](https://huggingface.co/Qwen)
-- [Hugging Face CLI Documentation](https://huggingface.co/docs/hub/security-tokens)

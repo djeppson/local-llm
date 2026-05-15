@@ -65,40 +65,6 @@ Ollama runs directly on the host (not in a container) and provides:
 
 ## Networking
 
-```
-┌──────────────────────────────────────────────────────────────────────┐
-│                       Host Machine                                   │
-│                                                                      │
-│  ┌───────────────┐                                                  │
-│  │    Ollama     │                                                  │
-│  │   :11434      │                                                  │
-│  └───────────────┘                                                  │
-│         ▲                                                           │
-│         │                                                           │
-│  ┌─────────────────────────────────────────────────────────────┐    │
-│  │  Open WebUI (network_mode: host)                             │    │
-│  │  :3000                                                       │    │
-│  │  ┌───────────────┐  ┌───────────────────┐                    │    │
-│  │  │ Talks to      │  │ Talks to          │                    │    │
-│  │  │ Ollama        │  │ SearXNG           │                    │    │
-│  │  │ :11434        │  │ :8411             │                    │    │
-│  │  └───────────────┘  └───────────────────┘                    │    │
-│  └─────────────────────────────────────────────────────────────┘    │
-│         ▲                                                           │
-│         │                                                           │
-│  ┌─────────────────────────────────────────────────────────────┐    │
-│  │  Podman Compose Network: local-llm                           │    │
-│  │                                                              │    │
-│  │  ┌──────────────┐  ┌──────────────┐                          │    │
-│  │  │   SearXNG    │  │    Valkey    │                          │    │
-│  │  │ :8411        │  │    :6379     │                          │    │
-│  │  └──────────────┘  └──────────────┘                          │    │
-│  └─────────────────────────────────────────────────────────────┘    │
-└──────────────────────────────────────────────────────────────────────┘
-```
-
-### Network Design Decisions
-
 1. **Compose Network (`local-llm`):** SearXNG and Valkey share the default compose network, giving them DNS-based connectivity (by service name) without exposing ports to the host beyond what's published.
 
 2. **Host Network (Open WebUI):** Open WebUI uses `network_mode: host` to reach both the host's Ollama and the published SearXNG port without complex routing.
