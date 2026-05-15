@@ -9,21 +9,13 @@ services:
     container_name: searxng-core
     image: docker.io/searxng/searxng:${SEARXNG_VERSION:-latest}
     restart: always
+    ports:
+      - "0.0.0.0:8411:8411"
     environment:
       - SEARXNG_PORT=8411
-    ports:
-      - "8411:8411"
     volumes:
-      - ./core-config/:/etc/searxng/:Z
+      - ./core-config/:/etc/searxng/:z
       - core-data:/var/cache/searxng/
-
-  valkey:
-    container_name: searxng-valkey
-    image: docker.io/valkey/valkey:9-alpine
-    command: valkey-server --save 30 1 --loglevel warning
-    restart: always
-    volumes:
-      - valkey-data:/data/
 
   open-webui:
     container_name: open-webui
@@ -34,7 +26,12 @@ services:
       - /home/jeppson/.local/share/containers/storage/volumes/open-webui/_data:/app/backend/data:Z
     environment:
       - OLLAMA_BASE_URL=http://localhost:11434
-      - SEARXNG_API_URL=http://localhost:8411
+      # PersistentConfig - only used at initial setup
+      - ENABLE_WEB_SEARCH=True
+      - WEB_SEARCH_ENGINE="searxng"
+      - WEB_SEARCH_RESULT_COUNT=3
+      - WEB_SEARCH_CONCURRENT_REQUESTS=10
+      - SEARXNG_QUERY_URL=http://localhost:8411/search?format=json&q=<query>
 
 volumes:
   core-data:
