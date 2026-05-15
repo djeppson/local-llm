@@ -9,9 +9,10 @@ services:
     container_name: searxng-core
     image: docker.io/searxng/searxng:${SEARXNG_VERSION:-latest}
     restart: always
+    environment:
+      - SEARXNG_PORT=8411
     ports:
-      - "${SEARXNG_PORT:-8080}:${SEARXNG_PORT:-8080}"
-    env_file: ./.env
+      - "8411:8411"
     volumes:
       - ./core-config/:/etc/searxng/:Z
       - core-data:/var/cache/searxng/
@@ -29,13 +30,11 @@ services:
     image: ghcr.io/open-webui/open-webui:v0.9.5
     restart: always
     network_mode: host
-    env_file: ./.env
     volumes:
       - /home/jeppson/.local/share/containers/storage/volumes/open-webui/_data:/app/backend/data:Z
     environment:
       - OLLAMA_BASE_URL=http://localhost:11434
-      - SEARXNG_API_URL=http://localhost:${SEARXNG_PORT:-8411}
-      - OPENAI_API_BASE_URL=http://localhost:${LLAMA_CPP_PORT:-10000}/v1
+      - SEARXNG_API_URL=http://localhost:8411
 
 volumes:
   core-data:
