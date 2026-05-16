@@ -164,3 +164,11 @@ podman compose up -d
 - [Podman Compose Documentation](https://podman-desktop.io/docs/podman-compose)
 - [Ollama Documentation](https://ollama.com/)
 - [Qwen Model Hub](https://huggingface.co/Qwen)
+
+
+
+
+docker run --rm -p 3001:3001 \
+--cap-add SYS_ADMIN \
+--name anythingllm \
+docker.io/mintplexlabs/anythingllm
