@@ -6,37 +6,27 @@ services:
     image: docker.io/searxng/searxng:${SEARXNG_VERSION:-latest}
     restart: always
     ports:
-<<<<<<< HEAD
       - "0.0.0.0:8411:8411"
     environment:
       - SEARXNG_PORT=8411
-=======
-      - "${SEARXNG_PORT:-8080}:${SEARXNG_PORT:-8080}"
     env_file: ./.env
->>>>>>> parent of 7cddb86 (Update podman-compose.yml to set SEARXNG_PORT and adjust port mappings)
     volumes:
       - ./core-config/:/etc/searxng/:z
       - core-data:/var/cache/searxng/
 
   open-webui:
     container_name: open-webui
-    # Note: Web retrieval is broken in v0.9.5 
+    # Note: Web retrieval is broken in v0.9.5
     image: ghcr.io/open-webui/open-webui:v0.9.4
     restart: always
     network_mode: host
     env_file: ./.env
     volumes:
-<<<<<<< HEAD
       - owui-data:/app/backend/data:Z
-    env_file: ./.env
-
-=======
-      - /home/jeppson/.local/share/containers/storage/volumes/open-webui/_data:/app/backend/data:Z
     environment:
       - OLLAMA_BASE_URL=http://localhost:11434
       - SEARXNG_API_URL=http://localhost:${SEARXNG_PORT:-8411}
       - OPENAI_API_BASE_URL=http://localhost:${LLAMA_CPP_PORT:-10000}/v1
->>>>>>> parent of 7cddb86 (Update podman-compose.yml to set SEARXNG_PORT and adjust port mappings)
 
 volumes:
   core-data:
