@@ -1,0 +1,11 @@
+---
+extends: default
+rules:
+    # Allow long lines since this is a configuration file
+    line-length:
+        max: 120
+        level: warning
+    # Allow unquoted strings in some cases
+    quoted-strings:
+        required: false
+        level: warning
