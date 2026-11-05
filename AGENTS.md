@@ -1,1 +1,1 @@
-README.md
+../frob/AGENTS.md

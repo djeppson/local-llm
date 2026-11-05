@@ -1,7 +1,5 @@
 # Local LLM Stack
 
-**agents**: This file provides critical context for agents working in this repository. All information here should be verified in the codebase before being used.
-
 ## Project Overview
 These services provide a complete self-hosted local AI productivity solution
 - **Ollama** as a local inference provider for LLM hosting
