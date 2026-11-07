@@ -1,6 +1,6 @@
 # Handoff: New AWS Account Hardening for Amazon Bedrock (Personal Use)
 
-**Date:** 2026-11-04 **Status:** Decisions finalized (incl. 2026-11-06 grill corrections); implementation pending per build order **Context:** Brand-new account in an existing AWS Organization, to be used as a "personal remote Ollama" — running LLMs too large to host locally. Owner is privacy-first, security-conscious, and cost-lean. Note: original working repo was wrong; this doc preserves state.
+**Date:** 2026-11-04 **Updated:** 2026-11-06 **Status:** Decisions finalized; implementation pending per build order. Session-2 work: MCP tooling installed (§7); SCP draft + root-access check outstanding (build 5 / §3). **Context:** Brand-new account in an existing AWS Organization, to be used as a "personal remote Ollama" — running LLMs too large to host locally. Owner is privacy-first, security-conscious, and cost-lean. Note: original working repo was wrong; this doc preserves state.
 
 ______________________________________________________________________
 
