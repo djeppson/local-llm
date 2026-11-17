@@ -1,1 +1,0 @@
-../frob/AGENTS.md
