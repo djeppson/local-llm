@@ -1,5 +1,7 @@
 # Local LLM Stack
 
+This repo is the working surface for the local IT landscape — the LLM stack is its largest tenant, but host hardware inventory, agent tooling, and ancillary services live here too. Naming is deferred until usage patterns settle; for now it stays `local-llm`.
+
 ## Project Overview
 
 These services provide a complete self-hosted local AI productivity solution
@@ -9,6 +11,15 @@ These services provide a complete self-hosted local AI productivity solution
 - **SearXNG** as privacy-respecting search backend
 - **OpenCode** for AI coding assistance
 - **Nginx** and **AWS Route 53** for access by other systems on the local network
+
+## Directory map
+
+- [`machine/`](./machine/) — per-host hardware inventory + live diagnostics ([`dj7900/`](./machine/dj7900/), [\`jeppmini/](./machine/jeppmini/))
+- [`docs/`](./docs/) — stack setup guides + experiment notes ([`ollama.md`](./docs/ollama.md), [`openwebui.md`](./docs/openwebui.md), [`vllm.md`](./docs/vllm.md), [`prompts/`](./docs/prompts/))
+- [`telemetry/`](./telemetry/) — point-in-time stack baselines
+- [`core-config/`](./core-config/) — SearXNG config
+- [`opencode/`](./opencode/) — OpenCode agent config
+- [`.scratch/`](./.scratch/) — agent handoffs (disposable; see `INDEX.md`)
 
 ## Tech Stack
 
@@ -25,7 +36,7 @@ These services provide a complete self-hosted local AI productivity solution
 ## Service Management
 
 - User Service: `local-llm`
-  - Open WebUI: http://localhost:3000
+  - Open WebUI: http://localhost:8080
   - SearXNG: http://localhost:8411
 - User Service: `ollama` with GPU acceleration via ROCm
   - Binds to loopback only (`OLLAMA_HOST=127.0.0.1:11434` in `~/.config/systemd/user/ollama.service`) — not directly reachable over the network
@@ -34,9 +45,11 @@ These services provide a complete self-hosted local AI productivity solution
   - Available models can be fetched from these endpoints:
     - Ollama tags endpoint: http://localhost:11434/api/tags
     - OpenAI models endpoint: http://localhost:11434/v1/models
-- System Service: `nginx`
+- System Service: `nginx-local`
   - Open WebUI: https://dj7900-local.darrenjeppson.com/
   - SearXNG: http://dj7900-local.darrenjeppson.com:8411
+
+> ⚠️ As of 2026-11-17 the TLS cert for `dj7900-local.darrenjeppson.com` is **expired** (since 2026-08-02). See [`telemetry/baseline-2026-11-17.md`](./telemetry/baseline-2026-11-17.md).
 
 ## Testing/Verification
 
