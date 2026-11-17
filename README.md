@@ -35,6 +35,8 @@ These services provide a complete self-hosted local AI productivity solution
 
 ## Service Management
 
+> This section is the top-level operational map (URLs/ports). Authoritative definitions live in the unit/compose files linked from [`docs/`](./docs/README.md); runbook-style "check this yourself" commands are in the per-component guides.
+
 - User Service: `local-llm`
   - Open WebUI: http://localhost:8080
   - SearXNG: http://localhost:8411

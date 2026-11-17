@@ -51,6 +51,8 @@ sudo dmidecode -t system
 
 ## Operating System
 
+> Values marked *transient* below (uptime, memory in use, root-disk usage, kernel) were captured 2026-11-17 — point-in-time, not durable facts. Durable lines (distribution, shell, desktop, CPU) are safe to assume.
+
 ### System Information
 
 - **Hostname**: `endeavor-7900`

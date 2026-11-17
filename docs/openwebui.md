@@ -58,6 +58,8 @@ Open WebUI has two configuration surfaces:
 
 > ⚠️ `webui.db` contains a secret (the HF API key). Keep backups of that directory private, and don't paste the config JSON into chat.
 
+> ℹ️ The snapshot above is **context, as read on 2026-11-11** — not a live value. Re-verification against the live DB is a deliberate placeholder task: see [`handoff-openwebui-verify-config.md`](../.scratch/handoff-openwebui-verify-config.md) (kept intentionally shallow; check only the specific keys you need, never dump the row).
+
 ## Data & state
 
 Everything lives in one named volume, `local-llm_owui-data`, mounted at `/app/backend/data` (z-flag):
@@ -98,7 +100,7 @@ podman exec -it open-webui bash
 
 - **Keep the pin.** v0.9.5 broke web retrieval; the stack was rolled back to v0.9.4 for that reason (compose comment + git history). If updating, test the SearXNG RAG path first, and restore `v0.9.4` if search regresses.
 - 1 uvicorn worker is fine for single-user use; raise `UVICORN_WORKERS` only if needed.
-- The TLS cert for the domain was reported **expired** in prior research notes (2026-11-11). Out of scope here, but it affects access via `dj7900-local.darrenjeppson.com` — verify cert renewal before treating "not reaching the site" as an Open WebUI issue.
+- The TLS cert for the domain is **expired** (`notAfter = Aug 2 04:04:29 2026 GMT`, confirmed live 2026-11-17; see [`telemetry/baseline-2026-11-17.md`](../telemetry/baseline-2026-11-17.md)). Quick check: `echo | openssl s_client -connect localhost:443 -servername dj7900-local.darrenjeppson.com 2>/dev/null | openssl x509 -noout -enddate`. Renew via certbot (`~/projects/nginx-local/`) before treating "not reaching the site" as an Open WebUI issue.
 
 ## Related components (pointers only)
 

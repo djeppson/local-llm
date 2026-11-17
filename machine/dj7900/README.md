@@ -14,6 +14,8 @@ Full inventory (motherboard, boot, peripherals, USB) lives in [`system-summary.m
 
 ## Live diagnostics
 
+- **ROCm/GPU state:** [`rocm-smi.md`](./rocm-smi.md) — point-in-time captures; re-capture with `rocm-smi`.
+
 > Note (2026-11-17): the prior notes guide documented a stale system-service layout for Ollama (`0.0.0.0` bind, firewalld). The live service is a **user** unit bound to `127.0.0.1:11434` with `HSA_OVERRIDE_GFX_VERSION` and KV cache tuning — see [`docs/ollama.md`](../../docs/ollama.md).
 
 ## Related

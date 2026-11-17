@@ -2,7 +2,7 @@
 
 In general, working with vLLM was rather frustrating and slow. I liked how it provided a benchmarking tool but it seems like the overall outcomes are:
 
-- I could never get it to really perform well, model choice was confusing and overall it was hugely more complex than my [Ollama setup](./dj7900/ollama-server.md)
+- I could never get it to really perform well, model choice was confusing and overall it was hugely more complex than my [Ollama setup](./ollama.md)
 - It is oriented toward high-concurrency workloads (which will be very unlikely in home/personal use)
 - It is heavily oriented toward NVidia (like most everything else)
 
