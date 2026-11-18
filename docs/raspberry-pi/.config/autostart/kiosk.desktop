@@ -1,0 +1,3 @@
+[Desktop Entry]
+Type=Application
+Exec=chromium --kiosk --ozone-platform=wayland --start-maximized "https://cloudwatch.amazonaws.com/dashboard.html?dashboard=Dash&context=eyJSIjoidXMtZWFzdC0xIiwiRCI6ImN3LWRiLTg3NTIyNjExMzEyNyIsIlUiOiJ1cy1lYXN0LTFfRWVlaWd3N1VjIiwiQyI6IjcxajBpM2RudnJndGZlajJpZjRwNWJ1M2hjIiwiSSI6InVzLWVhc3QtMTo4ODI3ZTI4My0wODFmLTQ1OTItODI5NC0zMjk4MzM4NTBmNWYiLCJNIjoiUHVibGljIn0%3D"
