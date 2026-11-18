@@ -16,6 +16,16 @@ Full inventory (motherboard, boot, peripherals, USB) lives in [`system-summary.m
 
 > Note (2026-11-17): the prior notes guide documented a stale system-service layout for Ollama (`0.0.0.0` bind, firewalld). The live service is a **user** unit bound to `127.0.0.1:11434` with `HSA_OVERRIDE_GFX_VERSION` and KV cache tuning — see [`docs/ollama.md`](../../docs/ollama.md).
 
+## Setup & how-tos
+
+- [`setup.md`](./setup.md) — initial hardware install, dev env, integrations
+- [`customization.md`](./customization.md) — boot, WoL, OpenRGB/CoolerControl/CoreCtrl
+- [`terminal.md`](./terminal.md) — cargo apps, starship, terminal notes
+- [`audio.md`](./audio.md) — audio streaming (listener/receiver, Sonos)
+- [`nginx.md`](./nginx.md) — local nginx proxy for cargo-lambda
+- [`containers.md`](./containers.md) — Podman + startup
+- [`kbd67mkiirgbv3.layout.json`](./kbd67mkiirgbv3.layout.json) — kbd67 physical keyboard layout
+
 ## Related
 
 - Stack setup and day-2 operations: [`docs/`](../../docs/)
