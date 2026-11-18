@@ -17,21 +17,18 @@ Work is **managed engineering**: sequential clusters, per-gate user review + use
 5. `kbd67mkiirgbv3.layout.json` is the layout of the **physical kbd67 keyboard on dj7900** → `machine/dj7900/` (a `projects/` axis was proposed then retracted by user).
 6. Digestion depth = **faithful merge**: move + tidy headings + merge true duplicates + fix in-cluster links only; **no prose rewrites**.
 
-## State @ checkpoint (cluster 1 executed, gate pending)
+## State @ checkpoint (clusters 1–2 executed)
 
-- **Cluster 1 done, awaiting user diff review + commit:** all 7 files moved `docs/` → `machine/dj7900/` (`setup.md`, `customization.md`, `audio.md`, `nginx.md`, `terminal.md`, `containers.md`, `kbd67mkiirgbv3.layout.json`); intra-cluster links fixed (`./linux-audio.md` → `./audio.md`; broken `dj7900.md` link → `../../docs/ollama.md`, label normalized to `ollama.md`); "Setup & how-tos" index section added to `machine/dj7900/README.md`.
-- **Dead refs left untouched** (recorded in diff, per locked decision): `./rust-cargo.md` (setup.md + terminal.md), `linux-gpu.md` (setup.md), `../src/main.rs` (setup.md).
-- Credential sweep (cluster 1): clean; only placeholder `AKIAEXAMPLE...` in the setup notes. **Cluster 2/3 sweeps not yet run — mandatory before those gates.**
-- Inbound ref check: no outbound repo references into the moved files other than the cluster's own (grep'd before move).
-- Starship sections in `customization.md` vs `terminal.md` are complementary, not duplicates — kept both.
-- `machine/jeppair/README.md` untouched.
+- **Cluster 1 committed by user** (2026-11-17): all 7 files in `machine/dj7900/` (`setup.md`, `customization.md`, `audio.md`, `nginx.md`, `terminal.md`, `containers.md`, `kbd67mkiirgbv3.layout.json`); links fixed; README "Setup & how-tos" index added. Context: dead refs left untouched (`./rust-cargo.md` ×2, `linux-gpu.md`, `../src/main.rs`); starship sections in `customization.md` vs `terminal.md` complementary — kept both; credential sweep clean (only placeholder `AKIAEXAMPLE...`); inbound ref check clean pre-move; `machine/jeppair/README.md` untouched.
+- **Cluster 2 done, awaiting user diff review + commit:** `security/` axis created; `mfa-totp.md` + `mfa-security-key.md` moved (untracked, plain `mv`); one-line README written; credential sweep clean (no seeds/secrets; `keith.jeppson@gmail.com` in key table is an account label). Intra-cluster link `./mfa-totp.md` in `mfa-security-key.md` stays valid post-move; no inbound refs found repo-wide.
+- **Cluster 3 sweep status:** `network.md` credential sweep still pending — mandatory before its gate (VPN details are the risk point).
 
 ## Queue (each gate: make edits → user reviews diff → user commits)
 
 | # | Cluster | `docs/` source → new home |
 |---|---------|---------------------------|
-| ~~1~~ | dj7900 host notes | **done (2026-11-17)** — `linux-initial-setup.md`→`setup.md`, `linux-customization.md`→`customization.md`, `linux-audio.md`→`audio.md`, `linux-nginx.md`→`nginx.md`, `terminal.md`, `containers.md`, `kbd67mkiirgbv3.layout.json` — all into `machine/dj7900/` + README index. **Gate pending: user review + commit.** |
-| 2 | security (new axis) | `mfa-totp.md`, `mfa-security-key.md` → `security/` + one-line README |
+| ~~1~~ | dj7900 host notes | **committed 2026-11-17** — all into `machine/dj7900/` + README index. |
+| ~~2~~ | security (new axis) | **done, gate pending (user review + commit)** — `mfa-totp.md`, `mfa-security-key.md` → `security/` + one-line README. |
 | 3 | network (new axis) | `network.md` → `network/` + one-line README |
 | 4 | development (new axis) | `development-tools.md` → `development/` + one-line README |
 | 5 | raspberry-pi host | `raspberry-pi/{README.md,chromium-dashboard.md,.config/autostart/kiosk.desktop}` → `machine/raspberry-pi/`; add host row to `machine/README.md` |
