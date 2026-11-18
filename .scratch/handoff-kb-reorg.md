@@ -17,19 +17,19 @@ Work is **managed engineering**: sequential clusters, per-gate user review + use
 5. `kbd67mkiirgbv3.layout.json` is the layout of the **physical kbd67 keyboard on dj7900** → `machine/dj7900/` (a `projects/` axis was proposed then retracted by user).
 6. Digestion depth = **faithful merge**: move + tidy headings + merge true duplicates + fix in-cluster links only; **no prose rewrites**.
 
-## State @ checkpoint (clusters 1–2 executed)
+## State @ checkpoint (clusters 1–3 executed)
 
 - **Cluster 1 committed by user** (2026-11-17): all 7 files in `machine/dj7900/` (`setup.md`, `customization.md`, `audio.md`, `nginx.md`, `terminal.md`, `containers.md`, `kbd67mkiirgbv3.layout.json`); links fixed; README "Setup & how-tos" index added. Context: dead refs left untouched (`./rust-cargo.md` ×2, `linux-gpu.md`, `../src/main.rs`); starship sections in `customization.md` vs `terminal.md` complementary — kept both; credential sweep clean (only placeholder `AKIAEXAMPLE...`); inbound ref check clean pre-move; `machine/jeppair/README.md` untouched.
-- **Cluster 2 done, awaiting user diff review + commit:** `security/` axis created; `mfa-totp.md` + `mfa-security-key.md` moved (untracked, plain `mv`); one-line README written; credential sweep clean (no seeds/secrets; `keith.jeppson@gmail.com` in key table is an account label). Intra-cluster link `./mfa-totp.md` in `mfa-security-key.md` stays valid post-move; no inbound refs found repo-wide.
-- **Cluster 3 sweep status:** `network.md` credential sweep still pending — mandatory before its gate (VPN details are the risk point).
+- **Cluster 2 committed by user** (2026-11-17): `security/` axis + README; sweep clean (no seeds; `keith.jeppson@gmail.com` in key table is an account label); intra-cluster link `./mfa-totp.md` stayed valid; no inbound refs.
+- **Cluster 3 done, awaiting user diff review + commit:** `network/` axis created; `network.md` moved (untracked, plain `mv`); one-line README written (Quad9 DNS, Fox/Starlight site-to-site VPN, WireGuard remote access); credential sweep clean (no IPs/keys/secrets — gateway nicknames + pricing notes only); no inbound refs, no internal links.
 
 ## Queue (each gate: make edits → user reviews diff → user commits)
 
 | # | Cluster | `docs/` source → new home |
 |---|---------|---------------------------|
 | ~~1~~ | dj7900 host notes | **committed 2026-11-17** — all into `machine/dj7900/` + README index. |
-| ~~2~~ | security (new axis) | **done, gate pending (user review + commit)** — `mfa-totp.md`, `mfa-security-key.md` → `security/` + one-line README. |
-| 3 | network (new axis) | `network.md` → `network/` + one-line README |
+| ~~2~~ | security (new axis) | **committed 2026-11-17** — `security/` + README. |
+| ~~3~~ | network (new axis) | **done, gate pending (user review + commit)** — `network.md` → `network/` + README. |
 | 4 | development (new axis) | `development-tools.md` → `development/` + one-line README |
 | 5 | raspberry-pi host | `raspberry-pi/{README.md,chromium-dashboard.md,.config/autostart/kiosk.desktop}` → `machine/raspberry-pi/`; add host row to `machine/README.md` |
 
