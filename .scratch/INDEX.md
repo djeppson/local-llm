@@ -11,4 +11,3 @@
 - **active** — [handoff-llama-cpp-rocm.md](handoff-llama-cpp-rocm.md) — llama.cpp ROCm integration; plan + unit exist, unit disabled/inactive; next: bring plan up to spec (grill) then execute.
 - **active** — [handoff-hf-token-hygiene.md](handoff-hf-token-hygiene.md) — inline HF token in vllm.md; rotated + scrubbed on move; verify Open WebUI key + no other locations before digest.
 - **active** — [handoff-hf-cache-cleanup.md](handoff-hf-cache-cleanup.md) — 143 GB HF cache, 21 model dirs, several Qwen3.6-27B near-dups; audit against loaded/queued models, trim, re-baseline.
-- **active** — [handoff-kb-reorg.md](handoff-kb-reorg.md) — digest loose `docs/*` notes into KB (dj7900 host notes, new `security/` `network/` `development/` axes, rpi host); decisions locked, **c1–c3 committed; c4 (development) + c5 (raspberry-pi) moved, gates pending user review/commit — `docs/` at target end-state**; per-gate user commits.
