@@ -1,14 +1,14 @@
 ---
 name: handoff
-description: Compact the current conversation into a handoff document for another agent to pick up.
+description: Compact the current conversation into a handoff document to wrap up the session for another agent to pick up in the future.
 argument-hint: "What will the next session be used for?"
 ---
 
 Write a handoff document summarising the current conversation so a fresh agent can continue the work. Save to the `.scratch/` folder (create if it does not exist) in the current workspace.
 
-Include a "suggested skills" section in the document, naming which skills the next agent should call the Skill tool for. List `sec-review` when the next session will reach a digestion or the user asks for a review — per AGENTS.md it runs at digestion (default exit gate, waivable) or on request; there is no pre-phase gate.
+Include a "suggested skills" section in the document, naming which skills the next agent should call the Skill tool for.
 
-Do not duplicate content already captured in other artifacts (PRDs, plans, ADRs, issues, commits, diffs). Reference them by path or URL instead.
+Do not duplicate content already captured in other artifacts (scripts, commits, diffs). Reference them by path or URL instead.
 
 Redact any sensitive information, such as API keys, passwords, or personally identifiable information.
 
