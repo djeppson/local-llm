@@ -9,7 +9,7 @@
 3. **Throughput target: 3 concurrent subagents @ 37k context** (middle of handoff's 2–5 "frequent" range). Both branches sized for this.
 4. **Longevity: 3-year asset, reassess at year 4.** NCM/compute-migration risk tracked (§10) but does not gate the purchase — if compute migrates to cloud by year 3, the Mac has already amortized most of its bandwidth-bound value.
 
-PC branch remains **closed**. M5 Max is the budget floor (~$3,300); M5 Ultra is the ceiling (~$5,500).
+PC branch remains **closed**. M5 Max is the budget floor (~$3,799, verified §E); M5 Ultra is the ceiling (~$5,500).
 
 **Working style (this workstream):** agent makes edits as checkpoints for diff review; user commits when settled. No propose-and-review delay on handoff updates.
 
@@ -33,7 +33,7 @@ The 7900 XTX is **not a candidate** for the shared workstation. Single-stream on
 | **Bandwidth** | 614 GB/s | **1,200 GB/s** |
 | **Neural Engine** | 16-core | 32-core |
 | **Form factors** | MacBook Pro, Mac Studio | Mac Studio |
-| **Approx price** | ~$3,300–4,000 | ~$5,500 |
+| **Approx price** | ~$3,799 | ~$5,499 |
 
 > M5 Max also has a lower tier: 32-core GPU @ 460 GB/s. The 40-core tier at 614 GB/s is the comparison point.
 > Apple specs: [M5 Max / M5 Ultra](https://support.apple.com/en-us/128107) · [MacBook Pro M5 Max](https://support.apple.com/en-us/126318)
@@ -117,36 +117,23 @@ Total memory = **model (18 GB) + N × (KV + response buffer)**.
 
 ## 5. Timing Analysis (M5 Max vs M5 Ultra)
 
-### 5a. Single subagent
+### 15k context (still valid — prefill is fast at low context)
 
-| Context | | **M5 Max 64 GB** | **M5 Ultra 96 GB** |
-|:---|:---:|:---:|:---:|
-| 15k | Prefill | ~3 s | ~1.5 s |
-| | Stream (1.5k) | ~28 s | ~14 s |
-| | **Total** | **~31 s** | **~16 s** |
-| 37k | Prefill | ~9 s | ~4 s |
-| | Stream (1k) | ~20 s | ~10 s |
-| | **Total** | **~29 s** | **~14 s** |
+| Scenario | M5 Max 64 GB | M5 Ultra 96 GB |
+|---|---|---|
+| Single subagent (prefill + 1.5k stream) | ~31 s | ~16 s |
+| 2 subagents (1k response each) | ~55 s each | ~27 s each |
+| 3 subagents (1k response each) | ~80 s each | ~40 s each |
 
-**Feel:** 14–16 s — press Enter, text streams faster than you read, no perceptible delay. 29–31 s — same pattern but slower; you start catching up. Noticeable, not annoying, for one task.
+### 37k context (SUPERSEDED — see §B corrected numbers)
 
-### 5b. Two subagents (e.g., "fix bug" + "write tests") — both fit on both tiers
+The §5a/5b/5c tables below were extrapolated from 15k + bandwidth ceiling. Real measurements (§B) showed the **cold 37k prefill gate is ~25–30 s on Ultra / ~45–55 s on Max** (not the ~4–9 s extrapolated), mitigated by prefix caching (89% hits, TTFT ~180 ms). Corrected per-subagent throughput: Max ~13–16 tok/s, Ultra ~22–28 tok/s. The "feel" summary (§8) is likewise superseded — the felt cost is the prefill gate, not the stream speed.
 
-| Context | | **M5 Max** | **M5 Ultra** |
-|:---|:---:|:---:|:---:|
-| 15k | Per-subagent tok/s | ~18 | ~37 |
-| | 1k-token response | **~55 s** | **~27 s** |
-| 37k | Per-subagent tok/s | ~16 | ~32 |
-| | 1k-token response | **~60 s** | **~30 s** |
-
-### 5c. Three subagents (reorg: "summarize" / "find refs" / "draft INDEX")
-
-| Context | | **M5 Max** | **M5 Ultra** |
-|:---|:---:|:---:|:---:|
-| 15k | Per-subagent tok/s | ~12 | ~25 |
-| | 1k-token response | **~80 s** | **~40 s** |
-| 37k | Per-subagent tok/s | ~16 | ~32 |
-| | 1k-token response | **~60 s** | **~30 s** |
+| Scenario | M5 Max (extrapolated) | M5 Ultra (extrapolated) | §B corrected |
+|---|---|---|---|
+| Single @37k total | ~29 s | ~14 s | Ultra ~50 s / Max ~75 s (prefill-dominated) |
+| 2-way @37k, 1k response | ~60 s each | ~30 s each | ~28–32 s each (Ultra) |
+| 3-way @37k, 1k response | ~60 s each | ~30 s each | ~22–28 s each (Ultra), ~13–16 each (Max) |
 
 ## 6. Shared Workstation Factor
 
@@ -169,27 +156,18 @@ The M5 Ultra's 96 GB means that after reserving subagents for both users, 50+ GB
 
 Running 8-bit on the M5 Ultra with 3 subagents: ~28 + 3×5.5 ≈ **44.5 GB** < 96 GB — comfortable. On the M5 Max 64 GB it fits but is tight.
 
-## 8. The "Feel" Summary
+## 8. The "Feel" Summary (SUPERSEDED — see §B / §5 corrected)
 
-| Scenario | M5 Max | M5 Ultra |
-|:---|:---|:---:|
-| Single subagent, light context (15k) | Fast — you read ahead | **Instant** |
-| Single subagent, heavy context (37k) | Slow — 29–31 s, you feel the prefill | **Instant** — 14 s |
-| 2 subagents, light context | **~55 s each** — losing momentum | **~27 s each** — reading |
-| 2 subagents, heavy context | **~60 s each** — watching crawlers | **~30 s each** — reading |
-| 3 subagents, heavy context (reorg) | **~60 s each** — 3 crawlers | **~30 s each** — 3 streams at reading pace |
-| + husband's subagent | **2 usable** | **3–4 usable** |
+Superseded by the cold-prefill-gate finding (§B): the felt cost of a 37k session is the ~25–30 s Ultra / ~45–55 s Max cold first turn, not the stream speed. After prefill, prefix caching makes subsequent turns near-instant (TTFT ~180 ms). and all 3 Ultra streams run at/above reading speed; the M5 Max sits at "monitoring speed" (glance, can't follow). The 15k single-subagent feel (~16 s Ultra / ~31 s Max) remains valid as written.
 
-The M5 Ultra is the first configuration where **all three streams are at or above reading speed** with a shared user. The M5 Max is at "monitoring speed" (you can glance but not follow).
-
-## 9. Cost / Throughput Analysis
+## 9. Cost / Throughput Analysis (pre-calibration; see Decision Matrix for calibrated numbers)
 
 | Platform | Approx. capex | Throughput at 3 subagents / 37k |
-|:---|:---:|:---:|
-| M5 Max 64 GB | ~$3,300 | 3 × 16 tok/s = 48 tok/s total |
-| M5 Ultra 96 GB | ~$5,500 | 3 × 32 tok/s = 96 tok/s total |
+|---|---|---|---|
+| M5 Max 64 GB | ~$3,799 | 3 × 13–16 tok/s = 39–48 tok/s total |
+| M5 Ultra 96 GB | ~$5,499 | 3 × 22–28 tok/s = 66–84 tok/s total |
 
-The M5 Ultra's ~$2,000–3,000 premium over the M5 Max buys:
+The M5 Ultra’s ~$1,700 premium over the M5 Max buys:
 - 2× the usable subagents (after 2 users)
 - 2× the per-subagent speed
 - The ability to run 8-bit/FP16 models
@@ -213,18 +191,9 @@ The handoff's analysis (§§2–9) is sound **for the autoregressive workloads o
 
 **Source:** Stanford Hazy Research NCM blog + paper (arXiv:2610.14162), Oct 2026.
 
-## Research Plan (restaged 2026-11-19 — see Next Action)
+## Research Plan
 
-The original plan (subagents A/B/D/E) was restaged under the narrowed frame (two independent branches: local-only, cloud-only). The current plan lives in the **Next Action** section below; this section is kept as historical context for what was originally proposed before the grill narrowed the frame.
-
-| # | Subagent focus | Question it answers |
-|:---:|:---|:---|
-| **A** | Model/arch trends over 5 years — MoE active-param math, extreme quant, NCM (compute-bound), KV compression, context growth; framed as *which hardware property each rewards* (bandwidth/capacity/compute) | Does the Mac's bandwidth+capacity advantage hold, or does the workload migrate toward compute/cloud? |
-| **B** | Real Apple Silicon benchmarks — measured M4/M5 Max & Ultra tok/s for 27B-class 4-bit at 1–4 concurrency (MLX, llama.cpp, Ollama) | Are the handoff's extrapolated Mac numbers (§2, §5) right, optimistic, or pessimistic? |
-| **D** | Cloud cost modeling — Bedrock + HF Inference pricing at the user's real token volume, hybrid routing feasibility, break-even vs ~$153/mo capex amortized over 3 years | Can ~$5,500 of cloud spend serve the same workload over 3 years, at what latency/parallelism tradeoff? |
-| **E** *(optional)* | Mac pricing/longevity — refresh cadence, resale value | What's the Mac's 3-year TCO and the upgrade/resale hedge? |
-
-PC branch subagent (formerly C) is **dropped** — PC branch closed.
+See **Next Action** for the restaged plan (two independent branches: local-only, cloud-only). The original A/B/D/E subagent framing is preserved there with branch assignments.
 
 ## Current State (verified 2026-11-17)
 
@@ -235,14 +204,7 @@ PC branch subagent (formerly C) is **dropped** — PC branch closed.
 
 ## Resolved Branches (2026-11-19 grill)
 
-1. **Budget ceiling: M5 Ultra 96 GB base (~$5,500).** 256/512 GB upgrade tiers and FP16-only models out of scope. Cloud must beat ~$5,500 amortized.
-2. **Branch structure: two independent branches** (hybrid framing dropped):
-   - **Local-only:** load-bearing question is cloud overflow frequency at 3 concurrent @ 37k.
-   - **Cloud-only:** load-bearing question is security/privacy/access constraints + steady-state monthly cost for 3 concurrent cloud subagents.
-3. **Throughput target: 3 concurrent subagents @ 37k context.**
-4. **Longevity: 3-year asset, reassess at year 4.** NCM risk tracked but does not gate.
-
-PC branch remains **closed**. M5 Max is the budget floor; M5 Ultra is the ceiling.
+See **Status / Decision space narrowed** at the top of this handoff for the four locked branches (budget ceiling, branch structure, throughput target, longevity).
 
 ## Remaining Open Questions
 
@@ -275,7 +237,7 @@ Append a **decision matrix** (Mac tier × cloud-spend-equivalent × throughput a
 
 ### D-local — Cloud overflow cost model (complete)
 
-**Verdict: overflow spend is negligible — $20–150/yr realistic, <$500/yr even at the extreme.** With 96 GB and 3 × 37k subagents using ~35 GB, the machine fits 4–6 concurrent subagents; a spill needs a 4th+ concurrent subagent or a >70k context — genuinely rare for 2 users. **The ~$2,000–3,000 Max→Ultra capex delta cannot be justified on spill economics** (payback would take decades); it must ride on speed, 8-bit precision, and headroom. Accepting rare spills is rational.
+**Verdict: overflow spend is negligible — $20–150/yr realistic, <$500/yr even at the extreme.** With 96 GB and 3 × 37k subagents using ~35 GB, the machine fits 4–6 concurrent subagents; a spill needs a 4th+ concurrent subagent or a >70k context — genuinely rare for 2 users. **The ~$1,700 Max→Ultra capex delta cannot be justified on spill economics** (payback would take decades); it must ride on speed, 8-bit precision, and headroom. Accepting rare spills is rational.
 
 - Per-session overflow cost (8 turns, ~352k in + 8k out): Claude Sonnet 5.5 uncached ~$0.78 / **cached ~$0.22** (cache-read $0.10/M, 95% off); Qwen3 Coder 480B ~$0.17; Claude Haiku 5.5 ~$0.04; HF/DeepInfra Qwen3.8-27B ~$0.07. Annual at moderate frequency (300 events): $12–234 depending on model choice.
 - **TPM gotcha:** Bedrock reserves input + max_tokens against TPM per request; unset max_tokens defaults to model max, so one 37k prefill can reserve ~100k+ quota units. Verify the `bedrock-invoke` TPM cap ≥ ~150k or a single overflow prefill will 429. Prompt-cache reads don't count against TPM.
@@ -290,7 +252,7 @@ Append a **decision matrix** (Mac tier × cloud-spend-equivalent × throughput a
 
 **Resale:** model **40–50% at 36 mo** — 2026 DRAM-shortage premium for high-RAM Macs is temporary (Macfax expects structural 15–18%/yr decay to reassert by 2027); M2 Ultra retained 58–70% at 35 mo, M1 Ultra 41–53% at 50 mo. Sell peer-to-peer — Apple Trade In pays 35–55% of market on Studios.
 
-**Longevity:** ~1,228.8 GB/s bandwidth stays competent through the 3-yr window (Ars measured ~50 tok/s on 27B-class on Ultra vs ~31 on Max — corroborates §2 extrapolations). Real risk is **capacity**, not bandwidth: 96 GB fits 27B + 70B-class models; 64 GB is tight if 100B+ quantized MoEs become the default coding model by year 3.
+**Longevity:** ~1,200 GB/s bandwidth stays competent through the 3-yr window (Ars measured ~50 tok/s on 27B-class on Ultra vs ~31 on Max — corroborates §2 extrapolations). Real risk is **capacity**, not bandwidth: 96 GB fits 27B + 70B-class models; 64 GB is tight if 100B+ quantized MoEs become the default coding model by year 3.
 
 **Vs. cloud line ($153/mo):** Ultra ≈ 60–70% of cloud cost and ends as a ~$2,400 asset; Max ≈ half of cloud cost. **On pure TCO, local wins both branches** — cloud's remaining argument is elastic scaling and zero hardware risk, not price.
 
