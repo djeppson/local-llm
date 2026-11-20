@@ -27,6 +27,7 @@
     { "action": "shell", "resource": "tail *", "effect": "allow" },
     { "action": "shell", "resource": "head *", "effect": "allow" },
     { "action": "shell", "resource": "ls *", "effect": "allow" },
+    { "action": "shell", "resource": "opencode stats *", "effect": "allow"},
     { "action": "shell", "resource": "find *", "effect": "allow" },
     { "action": "shell", "resource": "cargo check *", "effect": "allow" },
     { "action": "shell", "resource": "cargo clippy *", "effect": "allow" },

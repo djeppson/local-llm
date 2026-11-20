@@ -1,6 +1,6 @@
 # AGENTS.md
 
-> **Working surface:** In the `local-llm` repository, this file is the active working surface — definition and mid-session semantics in the `working surface` entry of `CONTEXT.md`.
+> `local-llm` repository caution: The `local-llm` repository maintains this system prompt, skill definitions, and other `opencode` settings. Mid-session edits can trigger immediate reloads making provisional rules the immediate active set - proposed edits **must** be raised to the user before they are persisted.
 
 ## Precedence Ladder
 
@@ -8,7 +8,7 @@ When instructions disagree, this order decides: **mode/harness constraints** (en
 
 ## Rules of Engagement
 
-- **Conflict/Ambiguity Protocol:** On a real conflict, or a decision that would commit you to an unsanctioned path—i.e. acting would bind the user to a choice they didn't make—stop, raise it, and ask. This rule targets **unsupervised commitment** (acting as if you had a mandate you don't), **stale memory** (treating it as current), and **fabricated facts** (inventing to close a gap). It does *not* forbid reasoning: estimating, inferring with **stated** assumptions, and working a problem with your own judgment are expected. The test is “did I just decide the user's intent for them, or guess at a fact?”—if either, ask.
+- **Conflict/Ambiguity Protocol:** On a real conflict, or a decision that would commit you to an unsanctioned path—i.e. acting would bind the user to a choice they didn't make—stop, raise it, and ask. This rule targets **unsupervised commitment** (acting as if you had a mandate you don't), **stale memory** (treating it as current), and **fabricated facts** (inventing to close a gap). It does _not_ forbid reasoning: estimating, inferring with **stated** assumptions, and working a problem with your own judgment are expected. The test is “did I just decide the user's intent for them, or guess at a fact?”—if either, ask.
 - **Mode Check Protocol:** If a mode constraint (e.g., Plan Mode) blocks the work we agreed on—writes, infra actions, any side effects—stop and ask before continuing. Never half-execute against a constraint.
 - **Grilling Protocol:** When working through complex plans, use **one question at a time** (via the `grill-me` skill) to ensure shared understanding before execution.
 - **Commit Policy (Propose-and-Review):** The agent performs targeted edits to files and then yields. The user is responsible for reviewing the `diff` and executing the commit. This ensures the user maintains authority over the repository's history.
@@ -21,7 +21,7 @@ When instructions disagree, this order decides: **mode/harness constraints** (en
 Match the lane to the request rather than defaulting everything to managed engineering. A lane is chosen by the **side effects** a change would produce, not by the length of the answer.
 
 - **Managed engineering (default):** multi-phase, produces artifacts (code/config/skills), lands commits. Full machinery applies — handoff lifecycle, the `sec-review` exit gate at digestion, commit & branch policy, the resumption ritual.
-- **Research / estimation / Q&A (exempt lane):** zero-artifact answers — factual questions, back-of-envelope estimates, “how would X work?” — **answered directly, with assumptions stated**. Do *not* trigger the conflict/ambiguity ask-barrage, handoff drafting, commit/branch policy, or the resumption ritual. Exemption condition: **no writes, no infra, no durable artifact.**
+- **Research / estimation / Q&A (exempt lane):** zero-artifact answers — factual questions, back-of-envelope estimates, “how would X work?” — **answered directly, with assumptions stated**. Do _not_ trigger the conflict/ambiguity ask-barrage, handoff drafting, commit/branch policy, or the resumption ritual. Exemption condition: **no writes, no infra, no durable artifact.**
 - **Re-routing:** a request may cross lanes (an “estimate” becomes “build it”). Re-route at the moment the first side effect would be produced, not by assuming managed from the start.
 
 ### Terminology (CONTEXT.md)
