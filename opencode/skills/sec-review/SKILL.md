@@ -10,10 +10,10 @@ Supervise a security review of the development workflow. One subagent per area, 
 
 | Report order | Area                                    | Skill ID (load with the `skill` tool) |
 | ------------ | --------------------------------------- | ------------------------------------- |
-| 1            | SE — Credentials & secrets              | `sec-review-se`                       |
-| 2            | NE — Network / SSH exposure             | `sec-review-ne`                       |
-| 3            | CP — Code unsafe patterns               | `sec-review-cp`                       |
-| 4            | SO — Social-engineering / trust surface | `sec-review-so`                       |
+| 1            | Credentials & secrets (SE)              | `sec-review-se`                       |
+| 2            | Network / SSH exposure (NE)             | `sec-review-ne`                       |
+| 3            | Code unsafe patterns (CP)               | `sec-review-cp`                       |
+| 4            | Trust surface / social-engineering (SO)  | `sec-review-so`                       |
 
 The area skills set `opencode/autoinvoke: false`: they are not advertised in the model's available list and are loadable only by explicit ID — by this skill's procedure, or by the user mentioning one directly.
 

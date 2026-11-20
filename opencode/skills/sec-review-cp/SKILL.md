@@ -1,6 +1,6 @@
 ---
-name: sec-review CP — Code unsafe patterns
-description: CP area of the sec-review supervisor — closed checklist CP-1..CP-5 with class tags and CWE anchors, plus safety guidance for destructive operations (A2). Loaded by ID from sec-review; deliberately not advertised on its own.
+name: sec-review — Code unsafe patterns (CP)
+description: Code unsafe patterns (CP) area of the sec-review supervisor — closed checklist CP-1..CP-5 with class tags and CWE anchors, plus safety guidance for destructive operations (A2). Loaded by ID from sec-review; deliberately not advertised on its own.
 metadata:
   opencode/autoinvoke: false
 ---

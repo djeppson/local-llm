@@ -1,6 +1,6 @@
 ---
-name: sec-review SE — Credentials & secrets
-description: SE area of the sec-review supervisor — closed checklist SE-1..SE-4 with class tags and CWE anchors, plus guidance on what to gather when an H1 fires. Loaded by ID from sec-review; deliberately not advertised on its own.
+name: sec-review — Credentials & secrets (SE)
+description: Credentials & secrets (SE) area of the sec-review supervisor — closed checklist SE-1..SE-4 with class tags and CWE anchors, plus guidance on what to gather when an H1 fires. Loaded by ID from sec-review; deliberately not advertised on its own.
 metadata:
   opencode/autoinvoke: false
 ---

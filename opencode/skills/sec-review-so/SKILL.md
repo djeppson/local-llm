@@ -1,6 +1,6 @@
 ---
-name: sec-review SO — Social-engineering / trust surface
-description: SO area of the sec-review supervisor — closed checklist SO-1..SO-5 with class tags and CWE anchors, plus guidance on what to gather when an H2/H3 trust finding fires. Loaded by ID from sec-review; deliberately not advertised on its own.
+name: sec-review — Trust surface / social-engineering (SO)
+description: Trust surface / social-engineering (SO) area of the sec-review supervisor — closed checklist SO-1..SO-5 with class tags and CWE anchors, plus guidance on what to gather when an H2/H3 trust finding fires. Loaded by ID from sec-review; deliberately not advertised on its own.
 metadata:
   opencode/autoinvoke: false
 ---

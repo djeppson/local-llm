@@ -1,6 +1,6 @@
 ---
-name: sec-review NE — Network / SSH exposure
-description: NE area of the sec-review supervisor — closed checklist NE-1..NE-4 with class tags and CWE anchors, plus advisory guidance on new network surface. Loaded by ID from sec-review; deliberately not advertised on its own.
+name: sec-review — Network / SSH exposure (NE)
+description: Network / SSH exposure (NE) area of the sec-review supervisor — closed checklist NE-1..NE-4 with class tags and CWE anchors, plus advisory guidance on new network surface. Loaded by ID from sec-review; deliberately not advertised on its own.
 metadata:
   opencode/autoinvoke: false
 ---
