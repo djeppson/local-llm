@@ -363,6 +363,83 @@ Measured anchors (27B-class 4-bit, ~16 GB): M5 Ultra MLX single **54.7** @512 ct
 5. **Engine choice is as load-bearing as tier** for the local branch: MLX-family batching server with prefix caching; llama.cpp multi-stream measured ~11 tok/s each.
 6. **Local overflow to cloud is a non-factor** (D-local: $20–150/yr) — no hybrid machinery needed; a rare spill can ride the existing (unblocked) Bedrock path.
 
+## Token Burn & Cost-per-Million-Tokens (household, 2026-11-19)
+
+**Revised household burn** (re-sizes the D-cloud volume, which sized ~45–228M tok/mo). Per person: 100–200M now → 200–400M planned; husband assumed similar. **Household: 400–800M tok/mo** (200–400M now → 400–800M planned). Every figure is a **cost-per-million-tokens (CPT)** so it lines up directly with the per-M rates on HF model cards; the $/mo column = that CPT × household burn.
+
+**CPT method.** Agent skew ~97% input / 3% output (§4 session math); ~85% of input tokens hit the prompt-prefix cache (prefix caching is load-bearing, §B). Effective CPT = weighted mix of uncached-input, cache-read, and output rates; no-cache CPT shown where it materially differs. Cache rates only where the provider publishes them. (Local rows are flat capex amortized over burn — not a per-token list price — §E.)
+
+| Route / model | List CPT (in/out) $/M | Effective CPT (cache where pub.) | $/mo @ 600M/mo |
+|:---|:---:|:---:|:---:|
+| DeepSeek V4.1 Flash (HF→DeepInfra) | $0.14 / $0.42 | **$0.05** (no-cache $0.15) | **$30** (no-cache $90) |
+| DeepSeek V4 Flash (HF→DeepInfra) | $0.09 / $0.18 | **$0.03** (no-cache $0.09) | **$20** (no-cache $56) |
+| Qwen3-Coder-480B (HF→DeepInfra) | $0.30 / $1.00 | **$0.16** (no-cache $0.32) | **$95** (no-cache $192) |
+| GLM-5.2 (HF→DeepInfra) | $0.56 / $1.80 | **$0.22** (no-cache $0.60) | **$132** (no-cache $360) |
+| Qwen3.8-27B (HF→DeepInfra) | $0.15 / $1.88 | **$0.20** (no-cache; cache n/a) | **$120** |
+| Qwen3.6-27B — *current local model* (HF→DeepInfra) | $0.32 / $3.20 | **$0.41** (no-cache; cache n/a) | **$246** |
+| Mistral Small 3.2 24B (HF→DeepInfra) | $0.075 / $0.20 | **$0.08** (no-cache) | **$48** |
+| **M5 Ultra 96 GB — local** | — flat capex ~$100–108/mo | **~$0.17/M** (0.13–0.27 across burn) | flat ~$104 (not token-gated) |
+| **M5 Max 64 GB — local** | — flat capex ~$65–75/mo | **~$0.11/M** (0.08–0.19 across burn) | flat ~$70 (not token-gated) |
+| Bedrock Sonnet 5.5 *(ref, closed)* | $3.00 / $15.00 ($0.30 cache) | ~$0.70 (cached) / ~$2.40 (no-cache) | ~$430 / ~$1,450 |
+| Bedrock Nova Pro / 2 Lite *(ref, closed)* | — | ~$0.4–0.85 | ~$234–510 |
+
+> **$/mo** shown at 600M/mo; scale linearly ×0.67 / ×1.33 for the 400/800M endpoints. List CPTs: DeepInfra/HF Inference list prices (Nov 2026), no HF markup. Sonnet/Nova CPTs re-derived from the D-cloud session math (10-turn ≈ 380k in/out; 2 users) at in $3.00 / out $15.00 / cache $0.30 per M. Local CPT = net 3-yr capex (Ultra ~$100–108/mo, Max ~$65–75/mo, §E) ÷ household burn.
+
+### Calibration (2026-11-20) — ground truth from `opencode stats`
+
+Factors above were assumptions; `opencode stats` (per the new `usage-stats` skill) now gives recorded usage to calibrate them. **Caveat: my usage is irregular and the history is short (75 active days lifetime, 17 in the last 30) — treat this as ballpark, not a clean signal.** Numbers below are deliberately not over-fitted.
+
+**Method.** Pulled `--all` (lifetime), `--days 90`, `--days 30`, each `--cost --models --json`. Derived per the skill: `input fraction = input/(input+output)` (the calculator's `--input` denominator), `cached input % = cache.read/(cache.read+input)`, plus a `billable IF = input/(input+output+reasoning)` for the case where reasoning is billed at the output rate. Compared each against the calculator's old defaults (97% input / 85% cache); flagged >10pp drift as MATERIAL.
+
+**Method & tooling (where the numbers come from — digested from `handoff-token-usage-analysis.md` 2026-11-20).** The ground-truth source is OpenCode V2's native `opencode stats` command — no API calls, no credentials, reads the local session DB. The command knowledge is packaged as a repo-local skill at `opencode/skills/usage-stats/SKILL.md` (progressive disclosure; documents flags `--days N` / `--year` / `--all` / `--models` / `--cost` / `--json`, the derived metrics above, the cache-read-cumulative caveat, the local-`cost: 0` tier question, and the calibration workflow). The skill is deliberately decoupled from any calculator path or factor value so it stays durable. The cost model itself is `scratch/token-burn-calculator.py` — a pure-Python synthetic CPT renderer whose defaults are now calibrated (`--input 0.90`, `--cache 0.85`) and whose CLOUD/LOCAL/REFERENCE blocks encode the list rates and TCO components from this handoff's §§D-cloud / E. The calculator's docstring cross-references this handoff; re-run it with `python3 scratch/token-burn-calculator.py [burn] --input F --cache F` to re-render after any rate or factor change. Note: `scratch/` (no dot) is permanent user scratch — the calculator is *not* agent-disposable; it is to be described for this handoff's use but **not** edited further and **not** kept as a maintained artifact after the research project closes.
+
+**Factor results (calculator-shape input fraction + cache hit):**
+
+| Window | IF (out-only) | IF (billable, reas@out) | cached input % | drift vs 97/85 |
+|:---|:---:|:---:|:---:|:---|
+| lifetime (75 active days) | 95.0% | 94.2% | 69.8% | IF −2pp ok · cache **−15.2pp MATERIAL** |
+| 90-day (36 active days) | 88.8% | 87.2% | 84.8% | IF −8pp ok · cache −0.2pp ok |
+| 30-day (17 active days) | 88.1% | 86.4% | 83.3% | IF −8.9pp ok · cache −1.7pp ok |
+| HF-only lifetime (cloud-billed pop.) | 92.6% | 88.5% | 88.8% | IF −4.4pp ok · cache +3.8pp ok |
+| HF-only 30-day | 92.3% | 84.4% | 88.4% | IF −4.7pp ok · cache +3.4pp ok |
+
+**What changed in the calculator (`scratch/token-burn-calculator.py`):**
+
+- **`--cache` 0.85 → unchanged (validated).** Recent (83–85%) and HF-specific (88%) cluster right at 85%. The lifetime 69.8% MATERIAL drift is the known historical-drag artifact (older sessions before prefix caching was load-bearing, already noted in the token-usage-analysis handoff); it is not the forward-looking factor. 85% is a defensible, slightly conservative midpoint.
+- **`--input` 0.97 → 0.90 (lowered).** The 97% came from the §4 *context-composition* estimate (prompt + tools + history dominates), but the calculator needs the *billed* token mix, and recorded input share is 88–95% — 97% overstates input share and therefore **understates cost** (input is cheaper than output on every calculator model). 0.90 is a ballpark midpoint across windows; the billable figure drops to ~0.84–0.86 if reasoning is billed at the output rate (see open question 1).
+
+**Effect of the factor change alone (rates held at DeepInfra list, 600M/mo):** GLM-5.2 effective CPT $0.22 → **$0.33** (+50%), $/mo $132 → **$199**; Qwen3-Coder-480B $0.16 → $0.22, $95 → $130; flash class ~$20 → ~$22. Mac rows unchanged (TCO-based). This **narrows but does not eliminate** the open-weight cloud price advantage; the Mac's net CPT (~$0.17/M) now sits *below* GLM-5.2-cloud ($0.33/M) but still well above flash class (~$0.04/M).
+
+### ⚠ Rate discrepancy found (unresolved — read before trusting absolute $/mo)
+
+Reverse-engineering recorded cost against tokens exposes a **much larger** discrepancy than the factor drift:
+
+| Model (HF, providerID `huggingface`) | Recorded cost | Implied eff $/M | Calculator's DeepInfra-list rate |
+|:---|:---:|:---:|:---:|
+| GLM-5.2 (lifetime) | $10.61 | **~$1.91/M** | in $0.56 / out $1.80 / cache $0.10 |
+| GLM-5.2 (30-day) | $7.34 | ~$2.01/M | " |
+| GLM-5 (lifetime) | $20.55 | ~$3.24/M | (not in calc) |
+
+Even billing reasoning at the output rate with **no** cache discount, the calculator's rates produce $4.23 lifetime vs $10.61 recorded for GLM-5.2 — **the calculator understates GLM-5.2 cost ~2.5×**, and the implied input rate to reconcile is **~$1.9–2.1/M, ~3.5× the $0.56/M list**. If the real effective rate is ~$2/M, then GLM-5.2 cloud at 600M/mo is **~$1,200/mo, not $132–199/mo** — which would flip the cloud-vs-Mac conclusion at the mid-tier (Mac ~$100/mo wins decisively).
+
+**Why I did NOT silently "fix" the calculator's rates:** the discrepancy is almost certainly a *route* difference, not a wrong list price. The calculator models **HF → DeepInfra** at DeepInfra's list; the recorded spend is on providerID `huggingface` (HF's own Inference), which may carry an HF markup or route to a different backend. **The two are not the same thing.** Whether the calculator's DeepInfra-list numbers are valid for the workstation decision depends on a fact only the user can confirm (see open question 2). Until resolved, **trust only the relative CPT ranking among same-route models, not the absolute $/mo.**
+
+### Open questions added by calibration (do not silently decide)
+
+1. **Is reasoning billed at the output rate on the DeepInfra route?** The calculator's `--input` denominator is `input/(input+output)`. GLM-5.2 emits substantial reasoning (30-day: 391k reasoning vs 306k output — reasoning *exceeds* output). If reasoning is billed at the output rate, the billable input fraction is ~0.84, not 0.90, and cost is higher again. Skill caveat flags this as unconfirmed. → If yes, set `--input 0.85` and re-render.
+2. **Which route is the recorded `huggingface` spend actually on — HF-hosted (markup) or DeepInfra via HF Inference Providers?** This single fact determines whether cloud GLM-5.2 is ~$132–199/mo (DeepInfra list) or ~$1,200/mo (recorded effective), and thus whether cloud beats the Mac at the mid-tier. **Decision-relevant; resolve before the branch decision.** Check: HF billing/settings page, or a one-shot `opencode stats` cross-check after explicitly selecting a DeepInfra provider variant.
+3. **(carried) cache-write semantics** — only `qwen3.6-plus-free` (9 steps) ever shows nonzero `cache.write`; all other models 0. Real warming or counting artifact? Does not affect current calibration (cache.write≈0 everywhere that matters).
+
+**Burn-rate cross-check (recorded, my cloud spend only — not household, not local):** 30-day $8.21 (~$8/mo annualized run-rate, 17 active days), 90-day $22.51 (~$7.5/mo, 36 active days). These are *my single-user, irregular* cloud spends; the household 600M/mo figure in the CPT table is a forward planning number, not an extrapolation of this history — do not treat the two as comparable.
+
+**What this changes vs. the decision matrix:**
+
+- **Claude-class is now the clear price outlier at this burn.** Sonnet runs ~$0.7–2.4/M → ~$430 (cached) to ~$1,450 (no-cache) per month; ×36 = ~$15k–$52k over 3 yr — past the ~$5,500 Ultra capex ceiling even at the *cached* end. A *cloud-only Sonnet tier* is out on price at 400–800M regardless of the quality hinge.
+- **Open-weight HF scales with burn but stays cheapest on CPT.** Flash class ~$0.03–0.05/M (~$20–30/mo); GLM-5.2 ~$0.22–0.60/M (~$132/mo cached, up to ~$360/mo no-cache). The earlier "$10–140/mo" was sized at 45–228M; at 600M it is ~2–3× higher in absolute dollars, **same relative ranking**.
+- **The Mac's effective CPT (~$0.11–0.17/M) sits mid-band in the open-weight range** — more expensive per token than flash class (3–5×) but competitive with Qwen-Coder/GLM-5.2 and far cheaper than Sonnet-class. So local's price case remains "flat, unthrottled, private, +~$2,400 residual," not "cheapest per token"; the price advantage over cloud shows up only vs. mid-tier+ open models or Sonnet-class.
+- **Burn is a peak-concurrency constraint for local, not a daily-volume constraint.** 400–800M/mo is high only because context is re-sent each turn; as active compute it's a few hours of subagent bursts per user per day, well within the Ultra's ~70–80 tok/s 3-way aggregate (§B). The CPT numbers are valid because the machine can actually burn this volume without saturation.
+- **Governance unblock is more load-bearing.** A $10 budget SCP and a low TPM cap would stall this burn on day one; budget ~$50–200/mo + TPM ≥ 300k (higher for the Sonnet tier) is now a hard prerequisite for any cloud branch.
+
 ## Suggested skills
 
 - **grill-me** — branches grilled 2026-11-19; reuse if new branches open during research.
@@ -377,3 +454,12 @@ Measured anchors (27B-class 4-bit, ~16 GB): M5 Ultra MLX single **54.7** @512 ct
 - [`docs/vllm.md`](../docs/vllm.md) — real 7900 XTX benchmarks (ROCm/vLLM)
 - [`docs/ollama.md`](../docs/ollama.md) — Ollama setup (current runner)
 - [`docs/openwebui.md`](../docs/openwebui.md) — Open WebUI
+
+## Security Review (sec-review · 2026-11-20)
+Result: PASS — all 4 areas complete, no H-class findings (2026-11-20). Advisory: none. The remaining artifacts (the `usage-stats` skill, `scratch/token-burn-calculator.py`, this handoff) carry no credential material, no network surface, no unsafe code patterns, and no trust-surface changes.
+- SE: complete — no findings
+- NE: complete — no findings
+- CP: complete — no findings
+- SO: complete — no findings
+
+Digestion exit gate over the remaining artifacts after digesting `handoff-token-usage-analysis.md` into this handoff: the `usage-stats` skill (`opencode/skills/usage-stats/SKILL.md`), `scratch/token-burn-calculator.py`, and this handoff itself.
