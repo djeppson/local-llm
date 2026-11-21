@@ -6,6 +6,14 @@
 
 **Suggested skills:** grill-with-docs — resume at Q2, one question at a time.
 
+## Triage (2026-11-21)
+
+**Decision: Keep.** Head of the AWS security chain — Q1 already landed in `AGENTS.md` as a preflight guard; one decision (Q2 identity shape) unblocks the seven-step build order. Abandoning would cascade to the downstream two.
+
+**Next step + LOE:** Resume grill at Q2 (A vs B identity shape, settle permission-set name) → unblocks allowlist enumeration. **[S = <1hr]** — single-decision grilling, no artifacts/infra yet.
+
+**Dependencies:** `model-gate-guardrails` and `invoke-path` both depend on this being applied first (the "handoff-access-hygiene" prerequisite named in model-gate-guardrails is this track). Keep this and the chain stays alive.
+
 ## Decisions (this session)
 
 - **Q1 — agent surface (AGREED):** `ai` only. Scoped control plane: investigative reads + the specific control writes the hardening needs (budgets, invocation logging, quotas, model access, guardrail config). Zero mgmt permissions; zero on the other seven accounts. Identity Center / org / IAM-creating operations stay **human-applied** (under `djeppson`). **The agent never modifies its own boundaries** — no permission sets, SCPs, policies, or SSO.

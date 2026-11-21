@@ -64,3 +64,15 @@ Each is a good fit for a deterministic check + a thin skill that knows when to r
 ## Security notes
 
 - This handoff intentionally names **no** credentials, profile names, or secret/infra specifics (per the `promote` escalation lesson — keep machine-obeyed bodies clean). Domain ops content stays in the existing config, referenced by path only.
+
+## Security Review (sec-review · 2026-11-21)
+Result: ESCALATE — 1 Critical finding (SO), NOT cleared by user. Do not proceed on the affected work (digestion/removal of this handoff). The AGENTS.md Lanes prose adjustment is separate work, outside this triage's scope.
+- SE: complete — no findings
+- NE: complete — no findings
+- CP: complete — no findings
+- SO: complete
+  - concern: "Research / estimation / Q&A (exempt lane): ... Do _not_ trigger the conflict/ambiguity ask-barrage, handoff drafting, commit/branch policy, or the resumption ritual. Exemption condition: **no writes, no infra, no durable artifact.**" | where: opencode/AGENTS.md → Framework → Lanes (Research/estimation/Q&A exempt lane, ~L24) | severity: Critical | CWE: CWE-693 · AISVS C9.2
+
+**User decision (2026-11-21):** escalation NOT cleared. The user judged that the AGENTS.md Lanes prose reads as a silent gate bypass and needs adjustment so the Conflict/Ambiguity Protocol re-framing is explicit rather than implied by the "no writes, no infra, no durable artifact" condition. That adjustment is separate work outside this triage. The handoff stays on disk as `pending-digestion (blocked)` until the prose is fixed and the exit gate re-run.
+
+Do not proceed on the affected work. Gather guidance first: SO Guidance for [Critical] gate-bypass — "preserve the gate's text (which gate, where it is defined) and record the user's explicit exemption decision *in the material under review*; no silent re-framing." The fired checklist item: an existing quality gate or safety protocol (the Conflict/Ambiguity Protocol) skipped or re-framed to keep work moving.

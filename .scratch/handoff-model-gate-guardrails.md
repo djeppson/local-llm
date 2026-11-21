@@ -4,6 +4,14 @@
 
 **Context:** Same project: personal remote Ollama on `ai` (741297776185, Bedrock, us-west-2). This handoff lands model access (the fail-fast gate) plus the protective controls that don't depend on it working: detective coverage and spend guardrails.
 
+## Triage (2026-11-21)
+
+**Decision: Keep.** Middle of the AWS security chain — GLM-5 access gate + detective coverage (GuardDuty/org trail) + $10/mo spend ceiling. Plan fully drafted, all steps PENDING; prerequisite (`agent-security-posture`) kept.
+
+**Next step + LOE:** Verify prerequisites (clean SSO both profiles, GuardDuty detector + org trail present, no existing spend SCP/budget), then perform the console-side GATE step to request `zai.glm-5` and accept the Z.AI EULA. **[M = a few hours]** — gate is a manual console action; surrounding verification spans both accounts and several services.
+
+**Dependencies:** Depends on `agent-security-posture` (kept) being applied first. Feeds `invoke-path` (kept) — which needs `zai.glm-5` active on `ai`/us-west-2.
+
 ## Carried forward (current state — verify where noted)
 
 - Model: **`zai.glm-5` only**, in-region us-west-2. `zai.glm-4-7-flash` deliberately held back. GLM-5.3 rejected (cross-region-only; region decision stands).

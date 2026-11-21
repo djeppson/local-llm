@@ -13,6 +13,14 @@ PC branch remains **closed**. M5 Max is the budget floor (~$3,799, verified §E)
 
 **Working style (this workstream):** agent makes edits as checkpoints for diff review; user commits when settled. No propose-and-review delay on handoff updates.
 
+## Triage (2026-11-21)
+
+**Decision: Keep.** Heaviest handoff (~42 KB) and only pure-research/decision track. Research complete across all 5 branches, decision matrix calibrated, sec-review PASSed. High residual value — abandoning would leave 42 KB of finished research with no recorded conclusion.
+
+**Next step + LOE:** Resolve the two hinge items: (1) the rate discrepancy — recorded `huggingface` provider spend implies GLM-5.2 ~2.5× the calculator's DeepInfra-list numbers (recorded ~$2/M vs calc $0.56/M), which would flip cloud-vs-Mac at the mid-tier; confirm the route (HF-hosted vs DeepInfra-via-HF) via one `opencode stats` cross-check or HF billing/settings look-up. (2) Then grill the quality-tier/privacy hinge to lock the branch. **[S = <1hr]** — both items are confirmation/decision work, not new research; the analysis is already done.
+
+**Dependencies:** Standalone — no other handoff depends on it, and it doesn't feed any other track. The `usage-stats` skill and `scratch/token-burn-calculator.py` are the persisted artifacts.
+
 ## Context
 
 User is evaluating a **new shared workstation** for themselves and their husband. Primary use case: **frequent coding with OpenCode subagents** serving local LLMs (Ollama, 27B class models at 4-bit), requiring **parallelism** (2–5 concurrent subagents).

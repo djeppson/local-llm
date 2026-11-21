@@ -2,6 +2,14 @@
 
 **Status:** active — rotate done; scrub done; verifications open.
 
+## Triage (2026-11-21)
+
+**Decision: Keep.** Nearest-complete handoff in the set — token rotation + `docs/vllm.md` scrub done, repo `grep` clean; only two quick verifications remain. Abandoning would leave an unverified credential-hygiene state.
+
+**Next step + LOE:** Run the two open verifications — (1) check the Open WebUI HF router connection in `webui.db` still works (or re-key it via Admin Settings → Connections → OpenAI), (2) `grep` the old token prefix across `~/.config`, `~/projects`, shell rc files. **[S = <1hr]** — both are quick checks against known locations, no code changes; a positive result closes the handoff for digestion.
+
+**Dependencies:** Standalone within the local-infra cluster — shares the Open WebUI surface with `llama-cpp-rocm` and the HF cache surface with `hf-cache-cleanup` (both kept), but no hard dependency.
+
 ## What happened
 
 `notes/guides/vllm.md` (now moved to `docs/vllm.md`) contained two inline copies of a Hugging Face access token (`hf_Btjh…`, public-read-only scope, last used ~2026-07-27). The token was committed to `djeppson/notes` (private repo). During the `it-landscape-consolidate` move the two literals were scrubbed to `${HF_TOKEN:?set HF_TOKEN from ~/.cache/huggingface/token}`.

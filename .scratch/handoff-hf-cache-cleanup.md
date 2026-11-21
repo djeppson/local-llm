@@ -21,6 +21,14 @@ The ~22 MB and ~20 KB dirs are mostly manifest stubs, not full weights — the r
 
 Trim the cache to the models actually in use (or queued for near-term use), recover disk, and leave a clean inventory.
 
+## Triage (2026-11-21)
+
+**Decision: Keep.** 143 GB cache recovery + clean inventory; baseline captured (21 dirs), no deletions yet. High residual value relative to small LOE.
+
+**Next step + LOE:** Run `huggingface-cli scan-cache` and cross-reference against Ollama `/api/tags`, the `llama-server.service` model path, and `docs/`/`.scratch/` refs to classify each of the 21 dirs keep/delete — resolving the three open deletion questions (Seed-Coder-8B-Reasoning 31 GB, Qwen2.5-Coder-32B-AWQ 19 GB, 7B vs 7B-AWQ consolidation) with the user before any deletion. **[S = <1hr]** — read-only audit against an already-captured baseline; bulk is cross-referencing a small fixed list + yes/no questions.
+
+**Dependencies:** Pairs with the kept `llama-cpp-rocm` track — its model (`lmstudio-community/Qwen3.6-27B-GGUF`, 16 GB) is in the audit set and must be classified keep. Shares the HF cache surface with `hf-token-hygiene`.
+
 ## Approach (sketch)
 
 1. **Audit** — `huggingface-cli scan-cache` and cross-reference against:
