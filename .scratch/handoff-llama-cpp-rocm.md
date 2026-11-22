@@ -12,13 +12,15 @@ Goal: run llama.cpp as a standalone ROCm server on dj7900 alongside Ollama, expo
 
 **Next step + LOE:** Run the plan through `grill-me` to resolve the three open branches (bind address, VRAM/concurrency, stale Open WebUI port `:3000` → real `:8080`), then refresh the plan before execution. **[S = <1hr]** — focused grilling over three already-identified decisions, not a re-plan.
 
-**Dependencies:** Head of the local-infra cluster. Its model (`Qwen3.6-27B-Q4_K_M.gguf`, `lmstudio-community/Qwen3.6-27B-GGUF`, 16 GB) is one of the 21 dirs in the `hf-cache-cleanup` audit — that cleanup must account for this track's model. Shares the Open WebUI surface with `hf-token-hygiene`.
+**Dependencies:** Head of the local-infra cluster. Shares the Open WebUI surface with `hf-token-hygiene`.
+
+> **Update 2026-11-21 (hf-cache-cleanup digested):** The model this track depends on — `lmstudio-community/Qwen3.6-27B-GGUF` (16 GB), `Qwen3.6-27B-Q4_K_M.gguf` — was deleted from `~/.cache/huggingface/hub/` by the HF cache cleanup. The `llama-server.service` unit (disabled/inactive) now references a non-existent path; re-enabling requires a 16 GB redownload first (`huggingface-cli` is not installed — reinstall via `pip install huggingface_hub`; auth is intact). Account for this when resuming the track: the "model present" assertion below is stale as of this date. See [`telemetry/baseline-2026-11-21.md`](../telemetry/baseline-2026-11-21.md).
 
 ## Current state (verified 2026-11-17)
 
 - **Plan:** [`plan-llama-cpp-rocm.md`](./plan-llama-cpp-rocm.md) — full integration plan (restore point). Copied from `notes/projects/plan-llamaCppRocmIntegration.prompt.md`.
 - **Unit:** `~/.config/systemd/user/llama-server.service` exists but is **disabled + inactive**. Configured for `0.0.0.0:10000`, loading `Qwen3.6-27B-Q4_K_M.gguf` from the HF cache. Not the live process on `:39299` — that one is Ollama's bundled runner (see [`telemetry/baseline-2026-11-17.md`](../telemetry/baseline-2026-11-17.md)).
-- **Model present:** `lmstudio-community/Qwen3.6-27B-GGUF` (16 GB) in HF cache.
+- **Model present (stale as of 2026-11-21):** `lmstudio-community/Qwen3.6-27B-GGUF` (16 GB) was in the HF cache; deleted by the HF cache cleanup. Redownload required to resume.
 
 ## Next action
 
