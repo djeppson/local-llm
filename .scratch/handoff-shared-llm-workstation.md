@@ -208,7 +208,7 @@ See **Next Action** for the restaged plan (two independent branches: local-only,
 - **Current live stack:** Ollama serving `qwen3.6:27b` on `:39299` (bundled runner, ~87% VRAM-resident on the 7900 XTX).
 - **Model present in HF cache:** `lmstudio-community/Qwen3.6-27B-GGUF` (16 GB) — 143 GB cache, 21 model dirs, several near-dups of this model (see `handoff-hf-cache-cleanup.md`).
 - **Ollama user-unit hardened** (see `handoff-hf-cache-cleanup.md` for context).
-- **Llama.cpp ROCm unit** exists but **disabled/inactive** — see `handoff-llama-cpp-rocm.md`.
+- **Llama.cpp ROCm standalone unit** was trialed but disabled/inactive; the standalone llama.cpp track was abandoned 2026-11-21 and the unit removed. Ollama is the sole GGUF runner on this host.
 
 ## Resolved Branches (2026-11-19 grill)
 
@@ -419,7 +419,6 @@ Even billing reasoning at the output rate with **no** cache discount, the calcul
 
 - [`handoff-invoke-path.md`](./handoff-invoke-path.md) — TPM cap, bedrock-invoke permission set (cloud branch context)
 - [`handoff-model-gate-guardrails.md`](./handoff-model-gate-guardrails.md) — GLM-5 access gate, spend-guard SCP (cloud cost controls)
-- [`handoff-llama-cpp-rocm.md`](./handoff-llama-cpp-rocm.md) — llama.cpp ROCm plan (PC alternative context)
 - [`handoff-hf-cache-cleanup.md`](./handoff-hf-cache-cleanup.md) — model cache state, current Ollama setup
 - [`docs/vllm.md`](../docs/vllm.md) — real 7900 XTX benchmarks (ROCm/vLLM)
 - [`docs/ollama.md`](../docs/ollama.md) — Ollama setup (current runner)

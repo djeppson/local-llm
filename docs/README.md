@@ -7,7 +7,6 @@ Setup guides and experiment notes for the local LLM stack on [`machine/dj7900/`]
 | Component              | Port                                                  | Guide                                              |
 | ---------------------- | ----------------------------------------------------- | -------------------------------------------------- |
 | Ollama (ROCm, GGUF)    | `127.0.0.1:11434`                                     | [`ollama.md`](./ollama.md)                         |
-| llama.cpp (ROCm, GGUF) | `127.0.0.1:10000` (unit) / `:39299` (live 2026-11-17) | `.scratch/handoff-llama-cpp-rocm.md` (in progress) |
 | Open WebUI             | `:8080` (host net)                                    | [`openwebui.md`](./openwebui.md)                   |
 | SearXNG                | `:8411`                                               | `core-config/` (config)                            |
 | nginx (TLS → `:8080`)  | `:443`                                                | `nginx-local.service` symlink                      |
