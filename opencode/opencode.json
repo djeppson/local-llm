@@ -75,9 +75,27 @@
       "models": {
         "qwen3.8:27b": {
           "name": "qwen3.8:27b",
+          "limit": {
+            "context": 64000
+          },
           "settings": {
-            "max_completion_tokens": 32000,
-            "reasoning_effort": "medium"
+            "max_completion_tokens": 16384,
+            "reasoningEffort": "medium",
+            "body": {
+              "options": {
+                "num_ctx": 64000
+              }
+            }
+          },
+          "capabilities": {
+            "reasoning": {
+              "supported": true,
+              "effort": [
+                "low",
+                "medium",
+                "high"
+              ]
+            }
           }
         },
         "granite4.1:3b": {
@@ -85,11 +103,29 @@
         },
         "gemma4:26b": {
           "name": "gemma4:26b",
+          "limit": {
+            "context": 64000
+          },
           "settings": {
-            "max_completion_tokens": 32000,
-            "reasoning_effort": "medium",
+            "max_completion_tokens": 16384,
+            "reasoningEffort": "medium",
+            "body": {
+              "options": {
+                "num_ctx": 64000
+              }
+            },
             "compaction": {
               "type": "summary"
+            }
+          },
+          "capabilities": {
+            "reasoning": {
+              "supported": true,
+              "effort": [
+                "low",
+                "medium",
+                "high"
+              ]
             }
           }
         }
