@@ -93,7 +93,7 @@
               "effort": [
                 "low",
                 "medium",
-                "high"
+                "xhigh"
               ]
             }
           }
@@ -108,7 +108,6 @@
           },
           "settings": {
             "max_completion_tokens": 16384,
-            "reasoningEffort": "medium",
             "body": {
               "options": {
                 "num_ctx": 64000
@@ -116,16 +115,6 @@
             },
             "compaction": {
               "type": "summary"
-            }
-          },
-          "capabilities": {
-            "reasoning": {
-              "supported": true,
-              "effort": [
-                "low",
-                "medium",
-                "high"
-              ]
             }
           }
         }
