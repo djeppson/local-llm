@@ -36,7 +36,7 @@ Match the lane to the request rather than defaulting everything to managed engin
 
 ### Handoffs [.scratch/](.scratch/)
 
-Keep the handoff fresh: **the handoff reflects the last commit, always.**
+Keep the handoff fresh: Agents fail sometimes and valuable research time is lost when the handoff is not updated at the end of a turn when informative or surprising information is obtained.
 
 - Draft with the **handoff** skill.
 - **sec-review:** run at digestion: **removing a handoff runs a sec-review exit gate over the remaining artifacts first, by default** (what persists after removal — committed code and config, credentials, network surface, trust changes) — the user may explicitly waive it at digestion time — because removal deletes the handoff context and its recorded findings with it. A review is warranted whenever notes turn into things a machine will execute or obey; surface it to the user and run it on their confirmation. `ESCALATE` stops the affected work (stop + gather guidance first); advisory findings are recorded for awareness. A cleared escalation records as `ESCALATE — cleared by user decision`; it is never rewritten as `PASS`.
