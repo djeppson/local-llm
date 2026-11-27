@@ -4,12 +4,25 @@ name: local-llm
 services:
   core:
     container_name: searxng-core
-    image: docker.io/searxng/searxng:${SEARXNG_VERSION:-latest}
+    # Pinned: build must postdate searxng#6620 (curl_cffi/Chrome-impersonation migration,
+    # merged 2026-09-04) — the prior stale "latest" (2026-05-10) had plain httpx egress,
+    # JA3-fingerprint blocked by brave/ddg/startpage, and returned zero web-search results.
+    image: docker.io/searxng/searxng:2026.11.26-b5605b8f2
     restart: always
+    # Loopback-only: SearXNG has no auth; the only client is Open WebUI on the
+    # host (localhost). LAN exposure was the "NE High" finding (CWE-923).
     ports:
-      - "0.0.0.0:8411:8411"
+      - "127.0.0.1:8411:8411"
     environment:
       - SEARXNG_PORT=8411
+      # entrypoint.sh chowns the bind-mounted config dir to its "searxng" uid on
+      # every start (= host uid 100976 under rootless), stealing ownership of
+      # core-config/ from the repo and breaking host-side edits. Disarm: warn only.
+      - FORCE_OWNERSHIP=false
+    # Live secret (server.secret_key) lives in the git-ignored env file below, not in
+    # this repo (sec-review 2026-11-26, CWE-532). The app prefers it over settings.yml.
+    env_file:
+      - ./core-config/.env
     volumes:
       - ./core-config/:/etc/searxng/:z
       - core-data:/var/cache/searxng/

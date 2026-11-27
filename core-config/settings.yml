@@ -103,7 +103,11 @@ server:
   # If your instance owns a /etc/searxng/settings.yml file, then set the following
   # values there.
 
-  secret_key: "IYZfrzoXuRipzcvXtD8wVRR6Yxv3ThR"  # Is overwritten by ${SEARXNG_SECRET}
+  # secret_key: deliberately NOT stored here (sec-review 2026-11-26, CWE-532).
+  # The live value is the SEARXNG_SECRET env var from ./core-config/.env
+  # (git-ignored). The app resolves it with priority over this file
+  # (searx/settings_defaults.py: SettingsValue, environ_name="SEARXNG_SECRET");
+  # with the env var absent the app fails to start instead of using a weak key.
   # Proxy image results through SearXNG. Is overwritten by ${SEARXNG_IMAGE_PROXY}
   image_proxy: false
   # 1.0 and 1.1 are supported
