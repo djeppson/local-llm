@@ -1,7 +1,5 @@
 # Handoff Index
 
-- **pending-digestion (blocked)** — [handoff-flexible-hierarchy.md](handoff-flexible-hierarchy.md) — **Triaged 2026-11-21: B-track (extraction-to-code) abandoned as low-value; A-pilot prose (committed AGENTS.md Lanes) persists regardless. Sec-review exit gate ESCALATED — 1 Critical SO finding on the committed exempt-lane prose (CWE-693 · AISVS C9.2): reads as re-framing the Conflict/Ambiguity Protocol to skip it. Removal blocked pending user decision on the Lanes framing.** A-pilot committed 2026-11-17. Moved from notes 2026-11-17.
-
 - **active** — [handoff-agent-security-posture.md](handoff-agent-security-posture.md) — independent track: lock the agent's AWS surface down to a scoped allowlisted `ai`-only permission set; Q2 (A vs B identity) is the next grill. **Triaged 2026-11-21: Keep** (head of AWS chain; [S] to grill Q2).
 
 - **active** — [handoff-model-gate-guardrails.md](handoff-model-gate-guardrails.md) — GLM-5 access gate; Access Analyzer; spend-guard SCP; $10 budget + anomaly detection. **Triaged 2026-11-21: Keep** (middle of AWS chain; [M] to verify prereqs + GATE step).
