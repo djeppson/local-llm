@@ -1,6 +1,6 @@
 # Shared LLM Workstation — Retained Research
 
-Distilled 2026-11-21 from `.scratch/handoff-shared-llm-workstation.md` (research complete 2026-11-19, calibrated 2026-11-20). The full handoff remains in place as reference until digestion; this is the durable subset worth keeping.
+Distilled 2026-11-21 from `.scratch/handoff-shared-llm-workstation.md` (research complete 2026-11-19, calibrated 2026-11-20). The full handoff has since been digested; this file is the sole authority. **Updated 2026-11-27:** added **M5 Max Studio 128 GB ($5,399)** as a third in-scope local config — capacity-max vs the Ultra's bandwidth-max at a $100 price gap; §2–§4 updated, calculator synced.
 
 **Decision context:** shared workstation for two users, primary workload is frequent coding with OpenCode subagents serving local LLMs (27B-class at 4-bit), requiring parallelism (target 3 concurrent subagents @ 37k context). Mac Studio tiers compared against cloud branches. 7900 XTX (24 GB) baseline is not a candidate — caps at 1 subagent at 37k.
 
@@ -57,31 +57,34 @@ Over a 3-year horizon the bottleneck does **not** fully migrate to compute (65�
 
 ### Specs
 
-| | M5 Max (18c CPU / 40c GPU) | M5 Ultra (30c CPU / 64c GPU) |
-|:---|:---|:---|
-| Memory | 64 GB unified | 96 GB unified |
-| Bandwidth | 614 GB/s | **1,200 GB/s** |
-| Neural Engine | 16-core | 32-core |
-| Form factors | MacBook Pro, Mac Studio | Mac Studio |
-| Approx price | ~$3,799 | ~$5,499 |
+| | M5 Max 64 GB (MacBook Pro) | M5 Max Studio 128 GB | M5 Ultra 96 GB (Mac Studio) |
+|:---|:---|:---|:---|
+| Memory | 64 GB unified | **128 GB** unified | 96 GB unified |
+| GPU-usable (default ~75% cap) | ~48 GB | **~96 GB** | ~72 GB |
+| Bandwidth | 614 GB/s | 614 GB/s | **1,200 GB/s** |
+| Neural Engine | 16-core | 16-core | 32-core |
+| Form factor | MacBook Pro | Mac Studio | Mac Studio |
+| Approx price | ~$3,799 | **$5,399** (1 TB) | $5,499 (1 TB) |
 
-> M5 Max also has a 32-core GPU tier @ 460 GB/s; the 40-core @ 614 GB/s is the comparison point.
+> Mac Studio M5 Max ladder: the 40-core GPU config ships 48 GB / 512 GB ($3,099) or 128 GB / 1 TB ($5,399) — **no 64 GB rung**, and 128 GB requires the 40-core GPU (the 32-core tier @ 460 GB/s ships only with 36 GB and is not the comparison point). Configurator verified 2026-11-07 ([MiniPC Blogs](https://minipcblogs.com/en/a/mac-studio-m5-max-128gb-vs-m5-ultra-96gb)); launch announcement Aug 25, 2026 ([Apple Newsroom](https://www.apple.com/newsroom/2026/08/apple-introduces-new-mac-studio-with-m5-max-and-m5-ultra/)). GPU-usable figures are macOS's default ~75% allocation cap; the limit is raisable (sysctl `iogpu.wired_limit_mb`), so the Ultra's 72 GB default is a squeeze, not a hard wall.
 > Apple specs: [M5 Max / M5 Ultra](https://support.apple.com/en-us/128107) · [MacBook Pro M5 Max](https://support.apple.com/en-us/126318)
-> No M4 Ultra exists — Apple went M3 Ultra → M5 Ultra. M3 Ultra (819 GB/s) is the Ultra-class calibration anchor for benchmarks in §3.
+> No M4 Ultra exists — Apple went M3 Ultra → M5 Ultra. M3 Ultra (819 GB/s) is the Ultra-class calibration anchor for benchmarks in §3. **No independent 128 GB vs 96 GB head-to-head benchmark exists** — Max-128 throughput below stays physics-derived like the rest.
 
-### Pricing & TCO (verified Nov 2026)
+### Pricing & TCO (verified Nov 2026; Studio Max ladder re-checked 2026-11-07)
 
 - **M5 Ultra 96 GB / 1 TB base = $5,499** (shipped Sept 22, 2026) — the ~$5,500 ceiling is exact.
-- **M5 Max 64 GB / 1 TB = ~$3,799** (36 GB base is $2,499 but too small for the workload).
-- 256 GB tier +$4,000; 512 GB +$15,500 — both out of scope (budget ceiling locked at the 96 GB base).
+- **M5 Max Studio 128 GB / 1 TB = $5,399** — $100 *under* the Ultra base, so the ceiling now holds **two** Studio configs, not one.
+- **M5 Max 64 GB / 1 TB = ~$3,799** (MacBook Pro rung; the Studio Max ladder skips it — 48 GB / $3,099 → 128 GB / $5,399). 36 GB bases ($2,499) are too small for the workload.
+- 256 GB tier +$4,000 (Ultra → $9,499); 512 GB +$15,500 — both out of scope.
 - Base 1 TB storage suffices for a 100–200 GB model library; skip Apple SSD upgrades (external TB5 ~$100/TB).
 
 **3-yr TCO (Ultra):** $5,499 + AppleCare+ $185 + electricity ~$420 (9 W idle / 385 W max, ~$11.50/mo at 8 h/day duty) − resale 40–50% (−$2,200–2,500) = **net ~$3,600–3,900 → ~$100–108/mo**.
-**Max floor nets ~$65–75/mo.** Mac efficiency displaces ~$700 of electricity vs a 7900 XTX-class tower over 3 years.
+**3-yr TCO (Max Studio 128):** $5,399 + AppleCare+ $185 + electricity ~$300 (~70% of Ultra, same Max-class duty assumption) − resale 40–50% (−$2,160–2,700) = **net ~$3,200–3,700 → ~$88–103/mo (mid ~$96)**.
+**Max MBP floor nets ~$65–75/mo.** Mac efficiency displaces ~$700 of electricity vs a 7900 XTX-class tower over 3 years.
 
 **Resale:** 40–50% at 36 mo (M2 Ultra retained 58–70% at 35 mo; M1 Ultra 41–53% at 50 mo). Sell peer-to-peer — Apple Trade In pays 35–55% of market on Studios. The 2026 DRAM-shortage premium for high-RAM Macs is temporary; expect structural 15–18%/yr decay to reassert by 2027.
 
-**Longevity:** 1,200 GB/s stays competent through the 3-yr window. Real risk is **capacity**, not bandwidth — 96 GB fits 27B + 70B-class models; 64 GB is tight if 100B+ quantized MoEs become the default coding model by year 3.
+**Longevity:** 1,200 GB/s stays competent through the 3-yr window. Real risk is **capacity**, not bandwidth — 96 GB fits 27B + 70B-class models; 64 GB is tight if 100B+ quantized MoEs become the default coding model by year 3. **Max Studio 128 GB is the strongest capacity underwrite in scope:** 70B-class @ 8-bit (~75–80 GB) fits as-shipped under the default GPU cap, and a ~200B-class 4-bit MoE becomes reachable — the Ultra's 72 GB default cap covers neither without an override.
 
 ---
 
@@ -114,6 +117,17 @@ Batching stack: **oMLX / Splash / vLLM-metal / TensorFold — avoid llama.cpp fo
 | Max 3-way @37k | ~16 each | ~13–16 each (agg ~40–48) |
 | **Cold 37k prefill** | Ultra ~4 s / Max ~9 s | **Ultra ~25–30 s / Max ~45–55 s** |
 
+**Max Studio 128 GB decodes identically to Max 64** — generation is bandwidth-bound (§1), so 128 GB buys *fit*, not tok/s: single ~26–32, 3-way ~13–16 each, cold prefill ~45–55 s all carry over unchanged. Its capability line is what runs *at all*:
+
+| Model class | M5 Max Studio 128 GB | M5 Ultra 96 GB |
+|:---|:---|:---|
+| 27B dense 4-bit @ 37k (the target) | ~26–32 single / ~13–16 ×3 | ~40–46 single / ~22–28 ×3 |
+| 70B dense 4-bit (~40 GB) | ceiling ~15 t/s (≈10–11 real) | ceiling ~30 t/s (≈21–25 real) |
+| 70B dense **8-bit** (~78 GB) | ceiling ~8 t/s (≈5–6 real); **fits as-shipped** | ceiling n/a — exceeds the default 72 GB GPU cap |
+| gpt-oss-120b MoE (117B/5.1B, 4-bit ≈ 60–65 GB) | fits, large KV headroom | fits, tighter |
+
+No independent 128-vs-96 head-to-head measurement exists (MiniPC Blogs, Nov 7 2026); Max-128 rows are physics-derived on the same ~70% real-world fraction.
+
 Caveat: no direct 3-concurrent dense-27B @37k measurement on Ultra exists — interpolated from the M3 Ultra batch shape + physics + the anecdotal 96 GB report. Qwen3.8's hybrid attention (16/64 layers keep KV) may make the 5.5 GB/stream KV assumption ~4× too big, which would favor 3-way throughput.
 
 ---
@@ -122,22 +136,22 @@ Caveat: no direct 3-concurrent dense-27B @37k measurement on Ultra exists — in
 
 ### Decision matrix axes
 
-| Axis | M5 Max 64 GB | M5 Ultra 96 GB | Cloud, open mid-tier (GLM-5.x / DeepSeek via HF) | Cloud, Claude-class (Bedrock Sonnet 5.5) |
-|:---|:---|:---|:---|:---|
-| Upfront capex | $3,799 | $5,499 | $0 (+ governance unblock) | $0 (+ TPM/budget/model grants) |
-| Effective 3-yr $/mo (net of resale) | ~$65–75 | ~$100–108 | $10–140, usage-based, no asset | $32 (light, cached) – $552 (heavy, uncached) |
-| Throughput, 3×37k subagents | ~13–16 each (agg ~40–48) | ~22–28 each (agg ~70–80) | not the constraint — our TPM cap is | same |
-| Cold 37k prefill | ~45–55 s | ~25–30 s | seconds (provider-side) | seconds |
-| 3-yr longevity | 64 GB tight if 100B+ MoE default by yr 3; 614 GB/s fine for MoE active reads | 96 GB fits 27B + 70B-class; capacity underwritten; compute is the weak flank at long ctx | elastic — always current models | elastic |
-| Privacy | source never leaves | source never leaves | source leaves to DeepInfra/Together — no training, but sampled logging, no contractual ZDR | strong no-training at Sonnet-class; avoid Fable-class (30-day AWS retention) |
-| Key risk | capacity wall by yr 3; prefill latency | prefill latency; compute flank | quality step-down vs Sonnet; our own SCP/budget governance stalls day one | cost blowout at heavy use; TPM friction |
+| Axis | M5 Max 64 GB (MBP) | M5 Max Studio 128 GB | M5 Ultra 96 GB | Cloud, open mid-tier (GLM-5.x / DeepSeek via HF) | Cloud, Claude-class (Bedrock Sonnet 5.5) |
+|:---|:---|:---|:---|:---|:---|
+| Upfront capex | $3,799 | $5,399 | $5,499 | $0 (+ governance unblock) | $0 (+ TPM/budget/model grants) |
+| Effective 3-yr $/mo (net of resale) | ~$65–75 | ~$88–103 | ~$100–108 | $10–140, usage-based, no asset | $32 (light, cached) – $552 (heavy, uncached) |
+| Throughput, 3×37k subagents | ~13–16 each (agg ~40–48) | ~13–16 each (agg ~40–48) — **identical, bandwidth-bound** | ~22–28 each (agg ~70–80) | not the constraint — our TPM cap is | same |
+| Cold 37k prefill | ~45–55 s | ~45–55 s | ~25–30 s | seconds (provider-side) | seconds |
+| 3-yr longevity | 64 GB tight if 100B+ MoE default by yr 3; 614 GB/s fine for MoE active reads | **strongest fit in scope**: 70B 8-bit as-shipped (~96 GB GPU-usable default), ~200B-class 4-bit MoE reachable; 614 GB/s fine for MoE active reads | 96 GB fits 27B + 70B-class at 4-bit; capacity underwritten; compute is the weak flank at long ctx | elastic — always current models | elastic |
+| Privacy | source never leaves | source never leaves | source never leaves | source leaves to DeepInfra/Together — no training, but sampled logging, no contractual ZDR | strong no-training at Sonnet-class; avoid Fable-class (30-day AWS retention) |
+| Key risk | capacity wall by yr 3; prefill latency | bandwidth flank + prefill latency (as all Max); the $1,600 over the MBP floor buys capacity, not speed | prefill latency; compute flank | quality step-down vs Sonnet; our own SCP/budget governance stalls day one | cost blowout at heavy use; TPM friction |
 
 ### Synthesis (the six things that actually drive the decision)
 
 1. **On price alone, open mid-tier cloud dominates**: $10–140/mo, no capex, never ages — and it's the like-for-like successor to the current `qwen3.6:27b` subagent stack (the primary agent already runs GLM-5.2 via HF daily — experiential data exists).
 2. **The Mac's case is not price.** It buys: source never leaving the machine, no throttle/outage dependence, flat marginal cost at heavy use, and a ~$2,400 residual asset at year 3.
 3. **The Ultra is the only configuration that beats Claude-class cloud at heavy use** (~$100/mo net vs $162–552/mo) — i.e., the Mac is also insurance against quality-tier escalation.
-4. **Max vs Ultra**: the premium nets to ~$30/mo after resale — Ultra buys 2× decode speed, the capacity the MoE trend rewards, and 8-bit headroom. The Max's remaining case is a hard budget cap at ~$3.8k.
+4. **Max vs Ultra now splits in two.** At the top of the Max line, Studio 128 GB ($5,399) vs Ultra 96 GB ($5,499) is a ~$100 capex / ~$5–8/mo gap — a pure bandwidth-vs-capacity trade with no price signal: the Ultra buys 2× decode and faster prefill, the Max buys +32 GB (~96 vs ~72 GB GPU-usable default). The MacBook Pro 64 GB floor ($3,799) remains the distinct budget case: ~$30/mo cheaper, capacity-tight.
 5. **Engine choice is as load-bearing as tier** for the local branch: MLX-family batching server with prefix caching; llama.cpp multi-stream measured ~11 tok/s each.
 6. **Local overflow to cloud is a non-factor** ($20–150/yr realistic) — no hybrid machinery needed; a rare spill can ride the existing (unblocked) Bedrock path.
 
@@ -145,8 +159,9 @@ Caveat: no direct 3-concurrent dense-27B @37k measurement on Ultra exists — in
 
 - What quality tier do the coding subagents actually need — is **open mid-tier** (GLM-5.x / DeepSeek class) adequate, given the current stack already runs a 27B open model locally and the primary agent runs GLM-5.2 via HF daily?
 - How much weight does **source-code-leaving-the-machine** carry for this household's repos?
+- If local: **bandwidth or capacity?** Ultra 96 GB wins the 27B target workload (2× decode, ~2× faster prefill) and covers everything up to ~70 GB; Max Studio 128 GB wins the fit game (70B 8-bit as-shipped; the only in-scope machine that keeps a >150B 4-bit MoE path open) for $100 less. §1's synthesis ("underwrite capacity, not bandwidth") argues Max; §3's target workload runs faster on Ultra. This resolves to how much the household expects its default coding model to *grow past ~70 GB* over the 3-yr window — a trend-confidence call, not a spec call.
 
-Open-mid-tier-adequate + privacy-light → cloud-only open route. Claude-class-at-heavy-use or privacy-heavy → M5 Ultra 96 GB local.
+Open-mid-tier-adequate + privacy-light → cloud-only open route. Claude-class-at-heavy-use or privacy-heavy → local, then pick Ultra 96 (bandwidth — optimize the known workload) or Max Studio 128 (capacity — underwrite the trend).
 
 ### Cost-per-million-tokens (calibrated 2026-11-20)
 
@@ -162,6 +177,7 @@ Household burn: **400–800M tok/mo** (per person 200–400M; husband assumed si
 | Qwen3.6-27B — *current local model* (HF→DeepInfra) | $0.32 / $3.20 | **$0.41** (no-cache; cache n/a) | **$246** |
 | Mistral Small 3.2 24B (HF→DeepInfra) | $0.075 / $0.20 | **$0.08** (no-cache) | **$48** |
 | **M5 Ultra 96 GB — local** | — flat capex ~$100–108/mo | **~$0.17/M** (0.13–0.27 across burn) | flat ~$104 (not token-gated) |
+| **M5 Max Studio 128 GB — local** | — flat capex ~$88–103/mo | **~$0.16/M** (0.12–0.24 across burn) | flat ~$96 (not token-gated) |
 | **M5 Max 64 GB — local** | — flat capex ~$65–75/mo | **~$0.11/M** (0.08–0.19 across burn) | flat ~$70 (not token-gated) |
 | Bedrock Sonnet 5.5 *(ref, closed)* | $3.00 / $15.00 ($0.30 cache) | ~$0.70 (cached) / ~$2.40 (no-cache) | ~$430 / ~$1,450 |
 | Bedrock Nova Pro / 2 Lite *(ref, closed)* | — | ~$0.4–0.85 | ~$234–510 |
@@ -219,3 +235,5 @@ Pull `--all` (lifetime), `--days 90`, `--days 30`, each with `--cost --models --
 4. **Longevity:** 3-year asset, reassess at year 4. NCM/compute-migration risk tracked but does not gate the purchase — if compute migrates to cloud by year 3, the Mac has already amortized most of its bandwidth-bound value.
 
 PC branch closed. M5 Max is the budget floor (~$3,799); M5 Ultra is the ceiling (~$5,499).
+
+> **Amended 2026-11-27:** M5 Max **Studio** 128 GB ($5,399 / 1 TB; configurator check 2026-11-07) added as a third in-scope local config. It sits **at the ceiling alongside the Ultra**, not at the floor — the ~$3,799 budget floor is the MacBook Pro 64 GB rung, and the Studio Max ladder jumps 48 GB ($3,099) → 128 GB ($5,399) with no 64 GB rung. Trade at the top: Ultra buys 2× decode for the 27B target workload; Max 128 buys the fit headroom §1 underwrites (70B 8-bit as-shipped; only in-scope path to >150B 4-bit MoE). §2–§4 and `token-burn-calculator.py` carry the numbers.

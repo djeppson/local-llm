@@ -57,15 +57,18 @@ ROUTE = "HF -> DeepInfra"
 # Local machines — 3-yr TCO components.
 # Each row: (name, capex, applecare_3yr, electricity_3yr, resale_lo, resale_hi)
 #   capex           : Apple list price. Ultra verified 2026-09-22 ($5,499);
-#                    Max corrected from the stale $3,300 to $3,799 — the 36 GB
+#                    Max MBP corrected from the stale $3,300 to $3,799 — the 36 GB
 #                    base ($2,499) is too small, 64 GB/1 TB is the real floor.
+#                    2026-11-27: added M5 Max STUDIO 128 GB — the Studio Max ladder
+#                    is 48 GB ($3,099) -> 128 GB ($5,399 / 1 TB, configurator check
+#                    2026-11-07); no 64 GB Studio rung exists.
 #   applecare_3yr   : AppleCare+ over the 3-yr window. Ultra = $185.
-#                    Max = ASSUMED same Mac Studio tier — adjust if you have it.
+#                    Max rows ASSUME the same Mac Studio tier — adjust if you have it.
 #   electricity_3yr : 3-yr electricity at ~8 h/day duty. Ultra = 9 W idle /
-#                    385 W max ≈ $420. Max = ESTIMATED ~70% of Ultra
+#                    385 W max ≈ $420. Max rows = ESTIMATED ~70% of Ultra
 #                    from the lower TDP — adjust if you have actuals.
 #   resale_lo/_hi   : absolute $ resale credit at 36 mo. Ultra ~40–45.5% of
-#                    capex. Max = 40–50% of capex (M2 Ultra retained 58–70% at
+#                    capex. Max rows = 40–50% of capex (M2 Ultra retained 58–70% at
 #                    35 mo; M1 Ultra 41–53% at 50 mo; sell peer-to-peer —
 #                    Apple Trade In pays 35–55% of market).
 #   gross $/mo = (capex + applecare + electricity) / 36      — no resale credit.
@@ -73,6 +76,7 @@ ROUTE = "HF -> DeepInfra"
 #   CPT (per burn) uses the net midpoint, consistent with the prior flat value.
 LOCAL = [
     ("M5 Ultra 96 GB (local)", 5499, 185, 420, 2200, 2500),
+    ("M5 Max Studio 128 GB (local)", 5399, 185, 300, 2160, 2700),
     ("M5 Max 64 GB (local)",   3799, 185, 300, 1520, 1900),
 ]
 
