@@ -11,21 +11,19 @@ This is a **docs + live-config repo, not a code project.** Nothing builds, there
 
 Some files in this repo **are** the running system (or the machine-wide agent config). Editing them has immediate or restart-gated live effects:
 
-| In this repo                    | Actually                                                                             | Editing it                                                                                                                                                                                                                      |
-| ------------------------------- | ------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `local-llm.service` (symlink)   | systemd **user** unit `~/.config/systemd/user/local-llm.service`                     | live user unit; starts `podman compose -f <this repo>/podman-compose.yml up -d` with `WorkingDirectory=<this repo>`                                                                                                             |
-| `ollama.service` (symlink)      | systemd **system** unit `/etc/systemd/system/`                                       | live **system**-scoped unit (Ollama official binary, runs as `ollama` user) — different reload path than the user units                                                                                                         |
-| `nginx-local.service` (symlink) | systemd **system** unit `/etc/systemd/system/`                                       | live **system**-scoped unit — different reload path than the user units                                                                                                                                                         |
-| `podman-compose.yml`            | the compose file the `local-llm` unit runs                                           | live stack (Open WebUI `:8080`, SearXNG `:8411`); change takes effect on `podman-compose up` / unit restart                                                                                                                     |
-| `core-config/`                  | bind-mounted as `/etc/searxng/` in the live `searxng-core` container                 | **live SearXNG config, not reference material**                                                                                                                                                                                 |
-| `opencode/`                     | the **global** OpenCode config — `~/.config/opencode` is a symlink to this directory | `AGENTS.md`, `CONTEXT.md`, `opencode.json`, `skills/` are injected with hot-reload into **every session of every repo on this machine**. User confirmation required before persisting edits (per the global file's own caution) |
+- `local-llm.service` (symlink) → actually the systemd **user** unit `~/.config/systemd/user/local-llm.service`. Editing it: live user unit; starts `podman compose -f <this repo>/podman-compose.yml up -d` with `WorkingDirectory=<this repo>`.
+- `ollama.service` (symlink) → actually the systemd **system** unit `/etc/systemd/system/`. Editing it: live **system**-scoped unit (Ollama official binary, runs as `ollama` user) — different reload path than the user units.
+- `nginx-local.service` (symlink) → actually the systemd **system** unit `/etc/systemd/system/`. Editing it: live **system**-scoped unit — different reload path than the user units.
+- `podman-compose.yml` → actually the compose file the `local-llm` unit runs. Editing it: live stack (Open WebUI `:8080`, SearXNG `:8411`); change takes effect on `podman-compose up` / unit restart.
+- `core-config/` → actually bind-mounted as `/etc/searxng/` in the live `searxng-core` container. Editing it: **live SearXNG config, not reference material**.
+- `opencode/` → actually the **global** OpenCode config; `~/.config/opencode` is a symlink to this directory. Editing it: `AGENTS.md`, `CONTEXT.md`, `opencode.json`, `skills/` are injected with hot-reload into **every session of every repo on this machine**. User confirmation required before persisting edits (per the global file's own caution).
 
 Traps agents have tripped on:
 
 - The `*.service` symlinks are the mechanism, not clutter — **keep them as symlinks.** Don't replace them with file copies, delete them, or "clean them up."
 - `machine/raspberry-pi/.config/` is **staging material for the Pi** (deployed there), not this host's live config and not a symlink.
 - `opencode/` can accumulate runtime state files (e.g. `cli.json`, `service.json`, `node_modules`, `package.json`) written by OpenCode — those are transient, gitignored, and **not** configuration.
-- "Docs" vs "live": `machine/`, `docs/`, `telemetry/`, `security/`, `network/`, `development/` are knowledge-base notes — edits are inert. The table above is the live surface — verify after editing (README Testing/Verification).
+- "Docs" vs "live": `machine/`, `docs/`, `telemetry/`, `security/`, `network/`, `development/` are knowledge-base notes — edits are inert. The list above is the live surface — verify after editing (README Testing/Verification).
 - Large files in context: prefer **sliced reads** — `grep`, `sed -n "X,Yp"`, `head`/`tail`, or offset/limit — over dumping whole files (e.g. `cat core-config/settings.yml` ≈ 20k tokens). For multi-step surveys of large material, hand the work to a subagent and keep only its conclusions in this session.
 
 ## Where things live
