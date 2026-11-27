@@ -17,4 +17,4 @@ Setup guides and experiment notes for the local LLM stack on [`machine/dj7900/`]
 
 ## Prompts
 
-[`prompts/`](./prompts/) — prompt-engineering notes (context skeletons, story/dev prompt patterns). Moved from `notes/scratch/llm/`.
+[`prompts/`](./prompts/) — prompt-engineering notes (context skeletons, story/dev prompt patterns).

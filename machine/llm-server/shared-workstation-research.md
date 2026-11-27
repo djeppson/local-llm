@@ -178,11 +178,11 @@ The ground-truth source for token usage and cost is **OpenCode V2's native `open
 ### Where the knowledge lives
 
 - **`opencode/skills/usage-stats/SKILL.md`** — repo-local skill, progressive disclosure. Documents the flags, the derived metrics, the cache-read-cumulative caveat, the local-`cost: 0` tier question, and the calibration workflow. **Deliberately decoupled from any calculator path or factor value so it stays durable** — read this first if you want to re-pull or re-calibrate.
-- **`scratch/token-burn-calculator.py`** — pure-Python synthetic CPT renderer. Defaults calibrated 2026-11-20 (`--input 0.90`, `--cache 0.85`). CLOUD/LOCAL/REFERENCE blocks encode the list rates and TCO components from this doc. Re-render with:
+- **`machine/llm-server/token-burn-calculator.py`** — pure-Python synthetic CPT renderer. Defaults calibrated 2026-11-20 (`--input 0.90`, `--cache 0.85`). CLOUD/LOCAL/REFERENCE blocks encode the list rates and TCO components from this doc. Re-render with:
   ```
-  python3 scratch/token-burn-calculator.py [burn] --input F --cache F
+  python3 machine/llm-server/token-burn-calculator.py [burn] --input F --cache F
   ```
-  `scratch/` (no dot) is **permanent user scratch — not agent-disposable**. The calculator is described for this research's use but is **not to be edited further or maintained as an artifact** after the research closes.
+
 
 ### Flags worth knowing
 
@@ -205,7 +205,7 @@ Pull `--all` (lifetime), `--days 90`, `--days 30`, each with `--cost --models --
 - **Cache-read is cumulative** — look at ratios over windows, not raw cumulative numbers. The lifetime 69.8% cache hit is a known historical-drag artifact (older sessions before prefix caching was load-bearing); the forward-looking factor is the recent ~83–88%.
 - **`cost: 0` rows on local providers** — confirm with the user whether that's truly free or a recording gap.
 - **Don't trust absolute $/mo blindly.** HF provider pricing drifts frequently; the load-bearing output of `opencode stats` calibration is the *directional* ranking and the factor values (input share, cache hit), not precise absolute spend. If absolute dollars matter for a decision, cross-check the recorded rate against the current list price at that moment rather than treating either as fixed.
-- **The skill is durable; the calculator is user-owned permanent scratch** — not agent-disposable, not maintained. Don't fold the skill's command knowledge into the calculator or vice versa; keep them decoupled so factor changes don't orphan the skill.
+- **The skill is durable; the calculator is a user-maintained tool.** Don't fold the skill's command knowledge into the calculator or vice versa; keep them decoupled so factor changes don't orphan the skill.
 
 ---
 

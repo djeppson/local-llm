@@ -15,7 +15,7 @@ We stress-tested the current instruction stack against a casual research questio
 ## Goals
 
 - **A. Flexible hierarchy** — the stack should adapt to the *kind* of task (research/estimation/Q&A vs. managed engineering) rather than defaulting everything to the managed path. Concretely: fix the "by inference" wording; add an explicit **exempt lane** for zero-artifact answers (direct answer, no handoff/commit/ask-barrage); make precedence something a machine can consult, since the ladder currently bottoms at an unstated "defaults."
-- **B. Extract mechanical pieces** — move the deterministic, verifiable bits out of prose into **code / tools / skills**, leaving prose only for judgment calls the model must make. The governing principle is already our own: from `handoff-promote-skill.md` → "User Review," a skill knows **when** and a tool executes **deterministically**.
+- **B. Extract mechanical pieces** — move the deterministic, verifiable bits out of prose into **code / tools / skills**, leaving prose only for judgment calls the model must make. The governing principle is already our own ("User Review"): a skill knows **when** and a tool executes **deterministically**.
 
 ## Current state (grounded)
 

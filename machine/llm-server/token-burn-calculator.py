@@ -1,9 +1,6 @@
 #!/usr/bin/env python3
 """Token burn & cost-per-million-tokens (CPT) calculator.
 
-Extracted from .scratch/handoff-shared-llm-workstation.md, section
-"Token Burn & Cost-per-Million-Tokens" (2026-11-19).
-
 Usage:
     python3 token-burn-calculator.py                  # 600 M tok/mo (default)
     python3 token-burn-calculator.py 400,600,800      # one $/mo column per burn
@@ -11,31 +8,30 @@ Usage:
 
 Arguments / options:
     burn      household burn in millions of tokens per month; comma-separated for
-              multiple columns (default: 600). Per the handoff the burn is
-              household (2 users), ~2x per-person (~100-200 now -> 200-400 planned).
+              multiple columns (default: 600). Household = 2 users, ~2x per-person
+              (~100-200 now -> 200-400 planned).
     --input F fraction of tokens that are input, agent skew (default 0.90)
     --cache F fraction of input tokens hitting the prompt prefix cache (default 0.85)
 
-    Defaults calibrated 2026-11-20 from `opencode stats` ground truth (see
-    .scratch/handoff-shared-llm-workstation.md §"Calibration (2026-11-20)"):
+    Defaults calibrated 2026-11-20 from `opencode stats` ground truth:
       --input  0.90  recorded IF (input/(input+output)) is 88-95% across windows
-                     on the HF/cloud-billed population; 97% (old default, from
-                     §4 context-composition estimate) overstated input share and
+                     on the HF/cloud-billed population; 97% (old default,
+                     context-composition estimate) overstated input share and
                      understated cost. 0.90 is a ballpark midpoint — the billable
                      fraction falls to ~0.84-0.86 if reasoning tokens are billed
-                     at the output rate (unconfirmed; see handoff open question).
+                     at the output rate (unconfirmed).
                      Range seen: 0.84 (HF 30d, reasoning billed) - 0.95 (life).
       --cache  0.85  validated: 83% (30d) / 85% (90d) / 88% (HF-only) / 70%
                      (lifetime, dragged by older pre-cache sessions). Recent
                      and HF-specific cluster around 85%; no change.
 
-CPT math (per the handoff):
+CPT math:
     no-cache  = in*IF + out*(1-IF)
     effective = in*IF*(1-HIT) + cache_rate*IF*HIT + out*(1-IF)
     $/mo      = CPT * burn
 
 Local rows expose the 3-yr TCO components (capex, AppleCare+, electricity,
-resale) per §E of the handoff; gross $/mo is pre-resale, net $/mo is the
+resale); gross $/mo is pre-resale, net $/mo is the
 resale-credited range, and CPT uses the net midpoint over burn.
 Edit the CLOUD / LOCAL / REFERENCE blocks below to reprice models.
 """
@@ -43,8 +39,8 @@ Edit the CLOUD / LOCAL / REFERENCE blocks below to reprice models.
 import argparse
 
 # (name, input $/M, cache-read $/M or None, output $/M)
-# List prices: DeepInfra/HF Inference, Nov 2026 (per the handoff). Cache-read
-# rates are set to reproduce the handoff's effective CPTs (DeepSeek: 10% of
+# List prices: DeepInfra/HF Inference, Nov 2026. Cache-read
+# rates are set to match the effective CPTs (DeepSeek: 10% of
 # input list price; Qwen-Coder-480B / GLM-5.2: flat $0.10/M). Edit here if
 # you have different published DeepInfra cache prices.
 CLOUD = [
@@ -58,20 +54,18 @@ CLOUD = [
 ]
 ROUTE = "HF -> DeepInfra"
 
-# Local machines — 3-yr TCO components (per §E of the handoff).
+# Local machines — 3-yr TCO components.
 # Each row: (name, capex, applecare_3yr, electricity_3yr, resale_lo, resale_hi)
 #   capex           : Apple list price. Ultra verified 2026-09-22 ($5,499);
 #                    Max corrected from the stale $3,300 to $3,799 — the 36 GB
 #                    base ($2,499) is too small, 64 GB/1 TB is the real floor.
-#   applecare_3yr   : AppleCare+ over the 3-yr window. Ultra = handoff value
-#                    ($185). Max = ASSUMED same Mac Studio tier (the handoff
-#                    gives only the net range for Max) — adjust if you have it.
-#   electricity_3yr : 3-yr electricity at ~8 h/day duty. Ultra = handoff value
-#                    (9 W idle / 385 W max ≈ $420). Max = ESTIMATED ~70% of Ultra
+#   applecare_3yr   : AppleCare+ over the 3-yr window. Ultra = $185.
+#                    Max = ASSUMED same Mac Studio tier — adjust if you have it.
+#   electricity_3yr : 3-yr electricity at ~8 h/day duty. Ultra = 9 W idle /
+#                    385 W max ≈ $420. Max = ESTIMATED ~70% of Ultra
 #                    from the lower TDP — adjust if you have actuals.
-#   resale_lo/_hi   : absolute $ resale credit at 36 mo. Ultra taken directly
-#                    from the handoff (~40–45.5% of capex). Max = 40–50% of
-#                    capex per the §E resale note (M2 Ultra retained 58–70% at
+#   resale_lo/_hi   : absolute $ resale credit at 36 mo. Ultra ~40–45.5% of
+#                    capex. Max = 40–50% of capex (M2 Ultra retained 58–70% at
 #                    35 mo; M1 Ultra 41–53% at 50 mo; sell peer-to-peer —
 #                    Apple Trade In pays 35–55% of market).
 #   gross $/mo = (capex + applecare + electricity) / 36      — no resale credit.
@@ -162,7 +156,6 @@ def main():
     blabels = [burn_label(b) for b in burns]
 
     print("Token burn & cost-per-million-tokens")
-    print("source: .scratch/handoff-shared-llm-workstation.md (2026-11-19)")
     print(f"household burn: {' / '.join(blabels)} M tok/mo")
     print(
         f"factors: input/output {ifrac*100:g} / {out_frac*100:g}  "
@@ -187,7 +180,7 @@ def main():
     print()
 
     # Local
-    print("Local (3-yr TCO amortized, FLAT not token-gated; see §E of handoff)")
+    print("Local (3-yr TCO amortized, FLAT not token-gated)")
     print("  gross $/mo = pre-resale TCO / 36   ·   net $/mo = (TCO - resale) / 36")
     print("  $/mo-at-burn is flat (same regardless of burn) — CPT scales as 1/burn")
     print("  gross CPT answers 'what did this token cost me' (capex-justified)")
@@ -231,7 +224,7 @@ def main():
     print()
     print(
         "Note: figures are computed exactly from the list prices and factors above; "
-        "the handoff table is rounded, so dollar values may differ slightly."
+        "the source figures are rounded, so dollar values may differ slightly."
     )
 
 

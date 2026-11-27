@@ -31,7 +31,6 @@ Match the lane to the request rather than defaulting everything to managed engin
 
 ### File-system Conventions
 
-- `scratch/` (no dot) = user scratchpads — permanent, never to be digested, deleted, or reorganized.
 - `.scratch/` (with dot) = agent handoffs — disposable, digested, deleted; see `.scratch/INDEX.md`.
 
 ### Handoffs [.scratch/](.scratch/)

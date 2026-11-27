@@ -36,7 +36,6 @@ Traps agents have tripped on:
 - `core-config/` — live SearXNG config (see map above).
 - `opencode/` — global agent config + skills (see map above).
 - `.scratch/` — agent handoffs; **disposable**, lifecycle + state in `INDEX.md`. On resuming work, check `INDEX.md` before anything else.
-- `scratch/` — user scratchpads; **permanent** — never digest, delete, or reorganize.
 
 ## Quality gates (repo-specific)
 
