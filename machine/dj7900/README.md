@@ -14,7 +14,7 @@ Full inventory (motherboard, boot, peripherals, USB) lives in [`system-summary.m
 
 ## Live diagnostics
 
-> Note (2026-11-17): the prior notes guide documented a stale system-service layout for Ollama (`0.0.0.0` bind, firewalld). The live service is a **user** unit bound to `127.0.0.1:11434` with `HSA_OVERRIDE_GFX_VERSION` and KV cache tuning — see [`docs/ollama.md`](../../docs/ollama.md).
+> Note (2026-11-26): Ollama runs as a **system** unit (`/etc/systemd/system/ollama.service`, official binary) bound to `127.0.0.1:11434` with KV-cache/flash-attention tuning in a drop-in — see [`docs/ollama.md`](../../docs/ollama.md). Prior notes described a stale layout (a `0.0.0.0` bind with firewalld, later a user unit with `HSA_OVERRIDE_GFX_VERSION`); both are retired.
 
 ## Setup & how-tos
 

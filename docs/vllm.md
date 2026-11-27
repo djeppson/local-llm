@@ -2,7 +2,7 @@
 
 In general, working with vLLM was rather frustrating and slow. I liked how it provided a benchmarking tool but it seems like the overall outcomes are:
 
-- I could never get it to really perform well, model choice was confusing and it was far more complex than Ollama 
+- I could never get it to really perform well, model choice was confusing and it was far more complex than Ollama
 - It is oriented toward high-concurrency workloads (which will be very unlikely in home/personal use)
 - It is heavily oriented toward NVidia (like most everything else)
 

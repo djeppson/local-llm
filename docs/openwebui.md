@@ -102,7 +102,7 @@ podman exec -it open-webui bash
 
 ## Related components (pointers only)
 
-- **Ollama** (LLM, ROCm/GPU, `:11434`) — user service `~/.config/systemd/user/ollama.service`; models in `~/.ollama/models/`
+- **Ollama** (LLM, ROCm/GPU, `:11434`) — system service `/etc/systemd/system/ollama.service`; models in `/var/lib/ollama/.ollama/models/` (see `docs/ollama.md`)
 - **SearXNG** (web search, `:8411`) — sibling container `searxng-core` in the same `podman-compose.yml`; config in `~/projects/local-llm/core-config/`
 - **nginx** (TLS, `:443` → `:8080`) — `~/projects/nginx-local/` + `/etc/systemd/system/nginx-local.service`
 - **Cert renewal** (certbot → S3 → `~/projects/nginx-local/certs/`) — see `~/projects/nginx-local/README.md`

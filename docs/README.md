@@ -4,12 +4,12 @@ Setup guides and experiment notes for the local LLM stack on [`machine/dj7900/`]
 
 ## Stack components
 
-| Component              | Port                                                  | Guide                                              |
-| ---------------------- | ----------------------------------------------------- | -------------------------------------------------- |
-| Ollama (ROCm, GGUF)    | `127.0.0.1:11434`                                     | [`ollama.md`](./ollama.md)                         |
-| Open WebUI             | `:8080` (host net)                                    | [`openwebui.md`](./openwebui.md)                   |
-| SearXNG                | `:8411`                                               | `core-config/` (config)                            |
-| nginx (TLS → `:8080`)  | `:443`                                                | `nginx-local.service` symlink                      |
+| Component             | Port               | Guide                            |
+| --------------------- | ------------------ | -------------------------------- |
+| Ollama (ROCm, GGUF)   | `127.0.0.1:11434`  | [`ollama.md`](./ollama.md)       |
+| Open WebUI            | `:8080` (host net) | [`openwebui.md`](./openwebui.md) |
+| SearXNG               | `:8411`            | `core-config/` (config)          |
+| nginx (TLS → `:8080`) | `:443`             | `nginx-local.service` symlink    |
 
 ## Experiment notes
 
