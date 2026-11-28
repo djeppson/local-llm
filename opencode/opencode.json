@@ -135,8 +135,7 @@
           "mcp-proxy-for-aws-cli@latest",
           "https://aws-mcp.us-west-2.api.aws/mcp",
           "--profile",
-          "ai",
-          "djeppson",
+          "ai-agent",
           "--region",
           "us-west-2"
         ]

@@ -1,140 +1,112 @@
 {
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Sid": "StsSelfId",
-      "Effect": "Allow",
-      "Action": [
-        "sts:GetCallerIdentity"
-      ],
-      "Resource": "*"
-    },
-    {
-      "Sid": "CloudTrailInvestigation",
-      "Effect": "Allow",
-      "Action": [
-        "cloudtrail:LookupEvents",
-        "cloudtrail:DescribeTrails",
-        "cloudtrail:GetTrailStatus"
-      ],
-      "Resource": "*"
-    },
-    {
-      "Sid": "CwLogsInvokeTrace",
-      "Effect": "Allow",
-      "Action": [
-        "logs:DescribeLogGroups",
-        "logs:GetLogEvents",
-        "logs:FilterLogEvents",
-        "logs:CreateLogGroup",
-        "logs:PutRetentionPolicy"
-      ],
-      "Resource": [
-        "arn:aws:logs:us-west-2:741297776185:*"
-      ]
-    },
-    {
-      "Sid": "CwMetricsMonitoring",
-      "Effect": "Allow",
-      "Action": [
-        "cloudwatch:ListMetrics",
-        "cloudwatch:GetMetricStatistics"
-      ],
-      "Resource": [
-        "arn:aws:cloudwatch:us-west-2:741297776185:*"
-      ]
-    },
-    {
-      "Sid": "BedrockModelAccessGate",
-      "Effect": "Allow",
-      "Action": [
-        "bedrock:ListFoundationModels",
-        "bedrock:GetFoundationModelAvailability",
-        "bedrock:ListFoundationModelAgreementOffers",
-        "bedrock:CreateFoundationModelAgreement",
-        "bedrock:DeleteFoundationModelAgreement"
-      ],
-      "Resource": "*"
-    },
-    {
-      "Sid": "BedrockInvocationLogging",
-      "Effect": "Allow",
-      "Action": [
-        "bedrock:GetModelInvocationLoggingConfiguration",
-        "bedrock:PutModelInvocationLoggingConfiguration"
-      ],
-      "Resource": "*"
-    },
-    {
-      "Sid": "BedrockGuardrails",
-      "Effect": "Allow",
-      "Action": [
-        "bedrock:ListGuardrails",
-        "bedrock:GetGuardrail",
-        "bedrock:ListGuardrailVersions",
-        "bedrock:GetGuardrailVersion",
-        "bedrock:CreateGuardrail",
-        "bedrock:UpdateGuardrail",
-        "bedrock:CreateGuardrailVersion",
-        "bedrock:UpdateGuardrailVersion"
-      ],
-      "Resource": [
-        "arn:aws:bedrock:us-west-2::guardrail/*"
-      ]
-    },
-    {
-      "Sid": "QuotasReadAndRequest",
-      "Effect": "Allow",
-      "Action": [
-        "service-quotas:GetServiceQuota",
-        "service-quotas:ListServiceQuotas",
-        "service-quotas:GetRequestedServiceQuotaChange",
-        "service-quotas:ListRequestedServiceQuotaChangeHistory",
-        "service-quotas:RequestServiceQuotaIncrease"
-      ],
-      "Resource": "*"
-    },
-    {
-      "Sid": "BudgetsAndCost",
-      "Effect": "Allow",
-      "Action": [
-        "budgets:ListBudgets",
-        "budgets:DescribeBudget",
-        "budgets:PutBudget",
-        "budgets:UpdateBudget",
-        "ce:GetCostAndUsage"
-      ],
-      "Resource": "*"
-    },
-    {
-      "Sid": "AccessAnalyzerFindings",
-      "Effect": "Allow",
-      "Action": [
-        "access-analyzer:ListAnalyzers",
-        "access-analyzer:ListFindings",
-        "access-analyzer:GetFinding"
-      ],
-      "Resource": [
-        "arn:aws:access-analyzer:us-west-2:741297776185:analyzer/*",
-        "arn:aws:access-analyzer:us-west-2:741297776185:analyzer/*/finding/*"
-      ]
-    },
-    {
-      "Sid": "IamScopedVerification",
-      "Effect": "Allow",
-      "Action": [
-        "iam:GetRole",
-        "iam:GetRolePolicy",
-        "iam:GetPolicy",
-        "iam:GetPolicyVersion",
-        "iam:ListAttachedRolePolicies",
-        "iam:ListRoles"
-      ],
-      "Resource": [
-        "arn:aws:iam::741297776185:role/agent-ai-*",
-        "arn:aws:iam::741297776185:role/AWSAdministratorAccess-*",
-        "arn:aws:iam::741297776185:policy/*"
-      ]
-    }
-  ]
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "StsSelfId",
+            "Effect": "Allow",
+            "Action": [
+                "sts:GetCallerIdentity"
+            ],
+            "Resource": "*"
+        },
+        {
+            "Sid": "CloudTrailInvestigation",
+            "Effect": "Allow",
+            "Action": [
+                "cloudtrail:LookupEvents",
+                "cloudtrail:DescribeTrails",
+                "cloudtrail:GetTrailStatus"
+            ],
+            "Resource": "*"
+        },
+        {
+            "Sid": "CwLogsInvokeTrace",
+            "Effect": "Allow",
+            "Action": [
+                "logs:DescribeLogGroups",
+                "logs:GetLogEvents",
+                "logs:FilterLogEvents",
+                "logs:CreateLogGroup",
+                "logs:PutRetentionPolicy"
+            ],
+            "Resource": [
+                "arn:aws:logs:us-west-2:741297776185:*"
+            ]
+        },
+        {
+            "Sid": "CwMetricsMonitoring",
+            "Effect": "Allow",
+            "Action": [
+                "cloudwatch:ListMetrics",
+                "cloudwatch:GetMetricStatistics"
+            ],
+            "Resource": [
+                "arn:aws:cloudwatch:us-west-2:741297776185:*"
+            ]
+        },
+        {
+            "Sid": "BedrockModelAccessGate",
+            "Effect": "Allow",
+            "Action": [
+                "bedrock:ListFoundationModels",
+                "bedrock:GetFoundationModelAvailability",
+                "bedrock:ListFoundationModelAgreementOffers",
+                "bedrock:CreateFoundationModelAgreement",
+                "bedrock:DeleteFoundationModelAgreement"
+            ],
+            "Resource": "*"
+        },
+        {
+            "Sid": "BedrockInvocationLogging",
+            "Effect": "Allow",
+            "Action": [
+                "bedrock:GetModelInvocationLoggingConfiguration",
+                "bedrock:PutModelInvocationLoggingConfiguration"
+            ],
+            "Resource": "*"
+        },
+        {
+            "Sid": "BedrockGuardrails",
+            "Effect": "Allow",
+            "Action": [
+                "bedrock:ListGuardrails",
+                "bedrock:GetGuardrail",
+                "bedrock:CreateGuardrail",
+                "bedrock:UpdateGuardrail",
+                "bedrock:CreateGuardrailVersion"
+            ],
+            "Resource": [
+                "arn:aws:bedrock:us-west-2:741297776185:guardrail/*"
+            ]
+        },
+        {
+            "Sid": "AccessAnalyzerFindings",
+            "Effect": "Allow",
+            "Action": [
+                "access-analyzer:ListAnalyzers",
+                "access-analyzer:ListFindings",
+                "access-analyzer:GetFinding"
+            ],
+            "Resource": [
+                "arn:aws:access-analyzer:us-west-2:741297776185:analyzer/*"
+            ]
+        },
+        {
+            "Sid": "IamScopedVerification",
+            "Effect": "Allow",
+            "Action": [
+                "iam:GetRole",
+                "iam:GetRolePolicy",
+                "iam:GetPolicy",
+                "iam:GetPolicyVersion",
+                "iam:ListAttachedRolePolicies",
+                "iam:ListRoles"
+            ],
+            "Resource": [
+                "arn:aws:iam::741297776185:role/agent-ai-*",
+                "arn:aws:iam::741297776185:role/AWSAdministratorAccess-*",
+                "arn:aws:iam::741297776185:policy/*"
+            ]
+        }
+    ]
 }
