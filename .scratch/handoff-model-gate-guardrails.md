@@ -1,6 +1,6 @@
 # Handoff: Model Gate & Guardrails (GLM-5 access, SCP, budget)
 
-**Date:** 2026-11-07 **Status:** IN PROGRESS — verified 2026-11-28: GATE pre-passed; builds 2 (Access Analyzer) + 3 (spend-guard SCP) done; only build 4 (budget + SNS + anomaly detection) remains **Prereq:** handoff-access-hygiene applied — both SSO profiles log in cleanly
+**Date:** 2026-11-07 **Status:** COMPLETE — verified 2026-11-28: GATE pre-passed; builds 2 (Access Analyzer) + 3 (spend-guard SCP) done; build 4 (budget + SNS + anomaly detection) SKIPPED by user decision 2026-11-28 (POC simplification — user monitors spend directly) **Prereq:** handoff-access-hygiene applied — both SSO profiles log in cleanly
 
 **Context:** Same project: personal remote Ollama on `ai` (741297776185, Bedrock, us-west-2). This handoff lands model access (the fail-fast gate) plus the protective controls that don't depend on it working: detective coverage and spend guardrails.
 
@@ -18,7 +18,7 @@
 - Region: us-west-2 only, enforced by an org region-deny SCP (pre-existing).
 - Org "AI services" data opt-out is in place — keep it; it has no functional impact on Bedrock.
 - Detective baseline (set up 2026-11-06, re-verify): org trail `management-events` (from mgmt, multi-region) covers `ai`; standalone GuardDuty detector `c0d0da32c6f93dd46378cc87c925bdaa` on `ai`/us-west-2.
-- Cost posture: $10/mo ceiling; fixed overhead ≈ $5/mo (GuardDuty).
+- Cost posture: $10/mo ceiling no longer enforced (build 4 skipped 2026-11-28, user decision); GuardDuty ≈ $5/mo fixed overhead remains. Spend-guard SCP (build 3) still blocks provisioned capacity + Marketplace.
 
 ## Verify first (results 2026-11-28, agent channel `ai-agent`)
 
@@ -65,4 +65,4 @@
    }
    ```
 
-1. PENDING — `ai`: $10/mo cost budget with alerts at 50% / 80% / 100% + forecast alert → SNS topic (us-west-2) → `darren.jeppson@gmail.com`; enable Cost Anomaly Detection (free)
+1. SKIPPED (2026-11-28, user decision) — `ai`: $10/mo cost budget with alerts at 50% / 80% / 100% + forecast alert → SNS topic (us-west-2) → `darren.jeppson@gmail.com`; enable Cost Anomaly Detection (free). Rationale: bypass rigid budgeting for the POC — user keeps a close eye on spend. Steps stand as drafted if the POC graduates.
