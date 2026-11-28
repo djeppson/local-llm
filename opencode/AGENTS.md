@@ -78,11 +78,11 @@ A process run only when requested. It involves a final check of terminology and 
 
 How this org runs AWS work through this agent. Account map: mgmt `djeppson` — org admin, SSO; member `ai` — Bedrock, us-west-2.
 
-> **how the setup stands today — verify before acting**
+> **Posture baseline (2026-11-28, user decision) — verify before acting**
 
-- **AWS MCP Server:** Use the `aws` MCP server, always selecting the correct profile (`ai` or `djeppson`) for the target account.
-- **Execution Pattern:** Do most AWS operations via the `aws` MCP server's run-script and `call_boto3` (async — await results; polling tools for long-running operations). Use pre-signed URLs for S3 data transfers.
-- **Reference before guessing:** If an API call fails, do not assume the API has changed; instead, assume the agent's understanding of the schema is incorrect. Use `aws___search_documentation`, `aws___read_documentation`, or `aws___retrieve_skill` to confirm the exact parameter names and structures.
+- **Agent channel: local AWS CLI, profile `ai-agent` only.** The `ai-agent` profile runs on long-lived, tightly-constrained static credentials scoped to the `ai` account (741297776185). The agent never modifies its own boundaries.
+- **All other profiles are human-only.** Human-controlled profiles are managed via SSO (Identity Center) with a ~1h blast radius (ephemeral ⇒ a leak self-expires). Any use of these profiles needs to be discussed with the user _prior_ to command execution and _must_ be explicitly approved.
+- **Human-applies / agent-verifies.** For privileged operations (SCPs, permission sets, SSO, IAM writes): the agent proposes the exact CLI call; the approval prompt on `aws` CLI calls **is** the review gate. Never assert an AWS action exists without verifying against the local CLI service model (`aws <svc> help`).
 - **Organizational Authority:** The management account (`djeppson`) is the source of truth for organization-wide state (SCPs, account inventory, etc.). When auditing SCPs, check both the account level and the organization root.
-- **Credential Management:** Credentials expire with the SSO session (~1h). On `ExpiredToken` or `UnrecognizedClient` errors, advise the user to run `aws sso login --profile <p>`. The MCP proxy will automatically detect and use the updated credentials.
+- **Credential management.** SSO sessions expire (~1h). On `ExpiredToken` / `UnrecognizedClient`, advise the user to run `aws sso login --profile <p>` — the CLI then picks up refreshed credentials. The static `ai-agent` credentials do not expire.
 - **OpenCode Continuity:** OpenCode may hot-reload its configuration or restart services mid-session. If you receive a "server restarted" notice, treat it as a soft stop: verify the current state on disk and resume from the last confirmed point.

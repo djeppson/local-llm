@@ -1,6 +1,6 @@
 # Handoff Index
 
-- **active** — [handoff-agent-security-posture.md](handoff-agent-security-posture.md) — independent track: lock the agent's AWS surface down to a scoped allowlisted `ai`-only permission set; steps 1–5 done + verified live 2026-11-27 (policy provisioned, `ReadOnlyAccess` fallback attached, negative test passed, MCP pinned to `ai-agent`); next: tighten (`IamScopedVerification` ARN fix → drop fallback), then local hygiene + AGENTS.md update. **Triaged 2026-11-21: Keep** (head of AWS chain).
+- **pending-digestion** — [handoff-agent-security-posture.md](handoff-agent-security-posture.md) — independent track: scope the agent's AWS surface. **Build complete 2026-11-28:** Posture baseline = AWS MCP **abandoned**; `ai-agent` on **long-lived, tightly-constrained static creds** + `agent-ai` policy + `ReadOnlyAccess`; highly-privileged creds **behind SSO (~1h blast radius)**; flimsy SSO-convention scoping dropped; test-matrix / tighten steps **superseded**; local hygiene **SKIPPED** (user; deferred); **AGENTS.md update landed** (user-approved). Remaining: user commit + requested digestion (sec-review exit gate default, waivable). **Triaged 2026-11-21: Keep** (head of AWS chain).
 
 - **active** — [handoff-model-gate-guardrails.md](handoff-model-gate-guardrails.md) — GLM-5 access gate; Access Analyzer; spend-guard SCP; $10 budget + anomaly detection. **Triaged 2026-11-21: Keep** (middle of AWS chain; [M] to verify prereqs + GATE step).
 
