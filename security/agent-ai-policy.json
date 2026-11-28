@@ -118,12 +118,12 @@
             "Sid": "SpendGuardServiceQuotas",
             "Effect": "Allow",
             "Action": [
-                "service-quotas:ListServices",
-                "service-quotas:ListServiceQuotas",
-                "service-quotas:GetServiceQuota",
-                "service-quotas:ListRequestedServiceQuotaChangeHistory",
-                "service-quotas:ListRequestedServiceQuotaChangeHistoryByQuota",
-                "service-quotas:GetRequestedServiceQuotaChange"
+                "servicequotas:ListServices",
+                "servicequotas:ListServiceQuotas",
+                "servicequotas:GetServiceQuota",
+                "servicequotas:ListRequestedServiceQuotaChangeHistory",
+                "servicequotas:ListRequestedServiceQuotaChangeHistoryByQuota",
+                "servicequotas:GetRequestedServiceQuotaChange"
             ],
             "Resource": "*"
         },
