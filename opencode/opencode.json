@@ -125,21 +125,5 @@
         "baseURL": "http://127.0.0.1:11434/v1"
       }
     }
-  },
-  "mcp": {
-    "servers": {
-      "aws": {
-        "type": "local",
-        "command": [
-          "/home/jeppson/.local/bin/uvx",
-          "mcp-proxy-for-aws-cli@latest",
-          "https://aws-mcp.us-west-2.api.aws/mcp",
-          "--profile",
-          "ai-agent",
-          "--region",
-          "us-west-2"
-        ]
-      }
-    }
   }
 }
