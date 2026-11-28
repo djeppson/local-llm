@@ -8,7 +8,7 @@
 
 **Decision: Keep.** Tail of the AWS security chain — the "last mile" that actually wires GLM-5 into daily OpenCode use. All decisions locked, policy drafted, six-step build order PENDING.
 
-**Next step + LOE:** Lower `zai.glm-5` TPM quota to 10,000 on `ai` via Service Quotas (step 1 of build order) — first unblocked action. **[S = <1hr]** — single console/CLI quota change; the rest is build-out.
+**Next step + LOE:** Lower `zai.glm-5` TPM quota to 10,000 on `ai` via Service Quotas (step 1 of build order) — first unblocked action. **[S = \<1hr]** — single console/CLI quota change; the rest is build-out.
 
 **Dependencies:** Depends on `model-gate-guardrails` (kept) being applied first — `zai.glm-5` must be active on `ai`/us-west-2. Upstream chain (`agent-security-posture` → `model-gate-guardrails`) both kept.
 

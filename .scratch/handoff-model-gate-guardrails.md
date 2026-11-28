@@ -30,6 +30,8 @@
 
 1. PENDING — **GATE** — `ai` console: Bedrock → Model access → request `zai.glm-5`, accept the Z.AI EULA; then confirm with `aws bedrock list-foundation-models --profile ai --region us-west-2`. If the console rejects it: **stop and revisit the model choice** — nothing below depends on the model, so nothing to unwind.
 
+   - **Caveat (from agent-security-posture, 2026-11-27):** the gate-close action the `agent-ai` set will carry is `bedrock:DeleteFoundationModelAgreement`, and it is **soft** — re-invoking the model recreates the agreement. Durable model blocking needs an IAM/SCP Deny (human-applied under `djeppson`). Open question for this track: does closing the GLM-5 gate require that Deny step, or is the soft delete the intended "re-open is a human/agent decision" semantic?
+
 1. PENDING — Enable IAM Access Analyzer on `ai` (free, no findings target of this handoff)
 
 1. PENDING — Create the spend-guard SCP and attach to 741297776185 (under `djeppson`). Approved 2026-11-06; wide-scope Deny is deliberate — nothing legitimate on this account needs provisioned capacity or Marketplace, and narrow scoping only buys holes:
