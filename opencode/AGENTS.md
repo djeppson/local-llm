@@ -12,6 +12,7 @@ When instructions disagree, this order decides: **mode/harness constraints** (en
 - **Mode Check Protocol:** If a mode constraint (e.g., Plan Mode) blocks the work we agreed on—writes, infra actions, any side effects—stop and ask before continuing. Never half-execute against a constraint.
 - **Grilling Protocol:** When working through complex plans, use **one question at a time** (via the `grill-me` skill) to ensure shared understanding before execution.
 - **Commit Policy (Propose-and-Review):** The agent performs targeted edits to files and then yields. The user is responsible for reviewing the `diff` and executing the commit. This ensures the user maintains authority over the repository's history.
+  - When yielding, present two copy-pasteable blocks: the commit message alone first (for pasting into a git interface), then the full command — `git add <touched paths> && git commit -m "<message>"` — with a short message matching the repo's recent commit style.
 - **Branching Protocol:** Work by default occurs on `main`. When a task is qualitatively "architectural" (e.g., refactoring core patterns, changing module interfaces) or quantitatively "extensive" (e.g., touching >5 files), the agent must nudge the user to move the work to a dedicated branch.
 
 ## Framework
@@ -42,10 +43,6 @@ Keep the handoff fresh: Agents fail sometimes and valuable research time is lost
 - Update the handoff before every decision commit.
 - Each handoff phase is small and targeted.
 - Handoffs are disposable; they exist until they are "digested."
-
-### Digestion
-
-A process run only when requested. It involves a final check of terminology and process adherence, a **sec-review exit gate over the remaining artifacts** (default, waivable by the user; removal deletes the handoff and its context — what persists gets reviewed first), and then the removal of the handoff document and its index entry. `pending-digestion` is the pre-terminal stage of this lifecycle: settled work awaiting a requested digestion.
 
 ### Resuming a Session
 
